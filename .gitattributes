@@ -1,0 +1,5 @@
+# Normalize line endings for text files
+* text=auto
+
+# Treat all files in wwwroot/lib as binary to prevent line ending conversion
+CarStoreUI/wwwroot/lib/* binary
