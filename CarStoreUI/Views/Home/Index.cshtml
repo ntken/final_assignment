@@ -1,0 +1,90 @@
+﻿@model IEnumerable<CarStoreUI.Models.CarDto>
+
+@{
+    ViewData["Title"] = "Home Page";
+    Layout = "_Layout";
+}
+
+<div class="container">
+    <div class="row">
+        <!-- Category Menu -->
+        <div class="col-md-3 category-menu" style="padding: 10px;">
+            <h2 class="h5">Category Menu</h2>
+            <ul class="list-group">
+                <!-- Expandable list for Companies -->
+                <li class="list-group-item">
+                    <a data-bs-toggle="collapse" href="#companiesList" role="button" aria-expanded="false" aria-controls="companiesList">Company</a>
+                    <div class="collapse" id="companiesList">
+                        <ul class="list-group list-group-flush mt-2">
+                            @if (ViewBag.Companies != null)
+                            {
+                                foreach (var company in ViewBag.Companies)
+                                {
+                                    <li class="list-group-item">
+                                        <a href="@Url.Action("ByFilter", "Car", new { filterType = "Company", filterValue = company.Name })">@company.Name</a>
+                                    </li>
+                                }
+                            }
+                        </ul>
+                    </div>
+                </li>
+
+                <!-- Expandable list for Models -->
+                <li class="list-group-item">
+                    <a data-bs-toggle="collapse" href="#modelsList" role="button" aria-expanded="false" aria-controls="modelsList">Model</a>
+                    <div class="collapse" id="modelsList">
+                        <ul class="list-group list-group-flush mt-2">
+                            @if (ViewBag.Models != null)
+                            {
+                                foreach (var carModel in ViewBag.Models)
+                                {
+                                    <li class="list-group-item">
+                                        <a href="@Url.Action("ByFilter", "Car", new { filterType = "Model", filterValue = carModel.Name })">@carModel.Name</a>
+                                    </li>
+                                }
+                            }
+                        </ul>
+                    </div>
+                </li>
+
+                <!-- Expandable list for Colors -->
+                <li class="list-group-item">
+                    <a data-bs-toggle="collapse" href="#colorsList" role="button" aria-expanded="false" aria-controls="colorsList">Color</a>
+                    <div class="collapse" id="colorsList">
+                        <ul class="list-group list-group-flush mt-2">
+                            @if (ViewBag.Colors != null)
+                            {
+                                foreach (var color in ViewBag.Colors)
+                                {
+                                    <li class="list-group-item">
+                                        <a href="@Url.Action("ByFilter", "Car", new { filterType = "Color", filterValue = color.Name })">@color.Name</a>
+                                    </li>
+                                }
+                            }
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Featured Products -->
+        <div class="col-md-9 featured-product p-3">
+            <h2 class="h5 mb-3">Featured Product</h2>
+            <div class="row">
+                @foreach (var product in ViewBag.FeaturedProducts)
+                {
+                    <div class="col-sm-6 col-md-4 mb-4">
+                        <div class="card">
+                            <img src="@product.Image" class="card-img-top" alt="@($"{product.Company} {product.Model}")">
+                            <div class="card-body">
+                                <h5 class="card-title">@($"{product.Company} {product.Model}")</h5>
+                                <p class="card-text">Price: @product.Price.ToString("N0") USD</p>
+                                <p class="card-text">@product.Description</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

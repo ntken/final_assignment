@@ -1,0 +1,32 @@
+@model List<CarStoreUI.Models.CarDto>
+
+<div class="container">
+    <h2>Car Detail</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Image</th>
+                <th>Company</th>
+                <th>Model</th>
+                <th>Color</th>
+                <th>Price</th>
+                <th>Released Date</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var car in Model)
+            {
+                <tr>
+                    <td>@car.Image</td>
+                    <td>@car.Company</td>
+                    <td>@car.Model</td>
+                    <td>@car.Color</td>
+                    <td>@car.Price</td>
+                    <td>@car.ReleasedDate</td>
+                    <td>@car.Description</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

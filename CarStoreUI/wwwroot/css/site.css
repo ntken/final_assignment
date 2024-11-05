@@ -1,0 +1,85 @@
+/* Category Menu Styles */
+.category-menu {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 5px;
+  border: 1px solid #ddd; /* Đường viền nhẹ để phân cách */
+  height: auto; /* Chiều cao tự động điều chỉnh dựa trên nội dung */
+}
+
+/* Featured Products Styles */
+.featured-product {
+  background-color: #ffffff;
+  padding: 15px;
+  border-radius: 5px;
+}
+
+/* Card Styles */
+.card {
+  border: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s;
+  height: 100%; /* Đảm bảo chiều cao của card tự động điều chỉnh để đồng bộ */
+  display: flex;
+  flex-direction: column; /* Sắp xếp các phần tử bên trong theo chiều dọc */
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.card-img-top {
+  height: 150px; /* Chiều cao cố định cho ảnh */
+  object-fit: cover; /* Giữ tỉ lệ ảnh */
+}
+
+.card-body {
+  text-align: center;
+  flex-grow: 1; /* Cho phép phần body mở rộng để các card có chiều cao đồng nhất */
+  display: flex;
+  flex-direction: column; /* Sắp xếp các phần tử theo chiều dọc */
+  justify-content: space-between; /* Phân bổ không gian đều cho các phần tử bên trong */
+}
+
+.card-title {
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: 10px; /* Khoảng cách dưới tiêu đề */
+}
+
+.btn-primary,
+.btn-outline-secondary {
+  margin-top: 10px;
+}
+
+/* Row of Cards to Align Heights */
+.featured-product .row {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.featured-product .col-sm-6,
+.featured-product .col-md-4 {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Global Styles */
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  overflow-x: hidden; /* Ẩn thanh cuộn ngang */
+}
+
+.footer {
+  text-align: center;
+  padding: 10px 0;
+  background-color: #f8f9fa;
+  border-top: 1px solid #ddd;
+  margin-top: 20px;
+}
