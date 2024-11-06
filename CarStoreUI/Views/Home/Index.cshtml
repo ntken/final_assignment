@@ -8,63 +8,85 @@
 <div class="container">
     <div class="row">
         <!-- Category Menu -->
-        <div class="col-md-3 category-menu" style="padding: 10px;">
-            <h2 class="h5">Category Menu</h2>
-            <ul class="list-group">
-                <!-- Expandable list for Companies -->
-                <li class="list-group-item">
-                    <a data-bs-toggle="collapse" href="#companiesList" role="button" aria-expanded="false" aria-controls="companiesList">Company</a>
-                    <div class="collapse" id="companiesList">
-                        <ul class="list-group list-group-flush mt-2">
-                            @if (ViewBag.Companies != null)
-                            {
-                                foreach (var company in ViewBag.Companies)
+        <div class="col-md-3 category-menu-wrapper" style="padding: 10px;">
+            <div class="category-menu-header">
+                <h2 class="h5">Category Menu</h2>
+            </div>
+            <div class="category-menu-list">
+                <ul class="list-group">
+                    <!-- Expandable list for Companies -->
+                    <li class="list-group-item">
+                        <a data-toggle="collapse" href="#companiesList" role="button" aria-expanded="false"
+                            aria-controls="companiesList">
+                            Company
+                        </a>
+                        <div class="collapse" id="companiesList">
+                            <ul class="list-group list-group-flush mt-2">
+                                @if (ViewBag.Companies != null)
                                 {
-                                    <li class="list-group-item">
-                                        <a href="@Url.Action("ByFilter", "Car", new { filterType = "Company", filterValue = company.Name })">@company.Name</a>
-                                    </li>
+                                    foreach (var company in ViewBag.Companies)
+                                    {
+                                        <li class="list-group-item">
+                                            <a
+                                                href="@Url.Action("ByFilter", "Car", new { filterType = "company", filterValue = company.Name })">
+                                                @company.Name
+                                            </a>
+                                        </li>
+                                    }
                                 }
-                            }
-                        </ul>
-                    </div>
-                </li>
+                            </ul>
+                        </div>
+                    </li>
 
-                <!-- Expandable list for Models -->
-                <li class="list-group-item">
-                    <a data-bs-toggle="collapse" href="#modelsList" role="button" aria-expanded="false" aria-controls="modelsList">Model</a>
-                    <div class="collapse" id="modelsList">
-                        <ul class="list-group list-group-flush mt-2">
-                            @if (ViewBag.Models != null)
-                            {
-                                foreach (var carModel in ViewBag.Models)
+                    <!-- Models Filter Links -->
+                    <li class="list-group-item">
+                        <a data-toggle="collapse" href="#modelsList" role="button" aria-expanded="false"
+                            aria-controls="modelsList">
+                            Model
+                        </a>
+                        <div class="collapse" id="modelsList">
+                            <ul class="list-group list-group-flush mt-2">
+                                @if (ViewBag.Models != null)
                                 {
-                                    <li class="list-group-item">
-                                        <a href="@Url.Action("ByFilter", "Car", new { filterType = "Model", filterValue = carModel.Name })">@carModel.Name</a>
-                                    </li>
+                                    foreach (var carModel in ViewBag.Models)
+                                    {
+                                        <li class="list-group-item">
+                                            <a
+                                                href="@Url.Action("ByFilter", "Car", new { filterType = "model", filterValue = carModel.Name })">
+                                                @carModel.Name
+                                            </a>
+                                        </li>
+                                    }
                                 }
-                            }
-                        </ul>
-                    </div>
-                </li>
+                            </ul>
+                        </div>
+                    </li>
 
-                <!-- Expandable list for Colors -->
-                <li class="list-group-item">
-                    <a data-bs-toggle="collapse" href="#colorsList" role="button" aria-expanded="false" aria-controls="colorsList">Color</a>
-                    <div class="collapse" id="colorsList">
-                        <ul class="list-group list-group-flush mt-2">
-                            @if (ViewBag.Colors != null)
-                            {
-                                foreach (var color in ViewBag.Colors)
+                    <!-- Colors Filter Links -->
+                    <li class="list-group-item">
+                        <a data-toggle="collapse" href="#colorsList" role="button" aria-expanded="false"
+                            aria-controls="colorsList">
+                            Color
+                        </a>
+                        <div class="collapse" id="colorsList">
+                            <ul class="list-group list-group-flush mt-2">
+                                @if (ViewBag.Colors != null)
                                 {
-                                    <li class="list-group-item">
-                                        <a href="@Url.Action("ByFilter", "Car", new { filterType = "Color", filterValue = color.Name })">@color.Name</a>
-                                    </li>
+                                    foreach (var color in ViewBag.Colors)
+                                    {
+                                        <li class="list-group-item">
+                                            <a
+                                                href="@Url.Action("ByFilter", "Car", new { filterType = "color", filterValue = color.Name })">
+                                                @color.Name
+                                            </a>
+                                        </li>
+                                    }
                                 }
-                            }
-                        </ul>
-                    </div>
-                </li>
-            </ul>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+            </div>
         </div>
 
         <!-- Featured Products -->
@@ -75,11 +97,16 @@
                 {
                     <div class="col-sm-6 col-md-4 mb-4">
                         <div class="card">
-                            <img src="@product.Image" class="card-img-top" alt="@($"{product.Company} {product.Model}")">
+                            <a href="@Url.Action("Details", "Car", new { id = product.Id })">
+                                <img src="@product.Image" class="card-img-top"
+                                    alt="@($"{product.CompanyName} {product.ModelName}")">
+                            </a>
                             <div class="card-body">
-                                <h5 class="card-title">@($"{product.Company} {product.Model}")</h5>
+                                <h5 class="card-title">
+                                    <a href="@Url.Action("Details", "Car", new { id = product.Id })"
+                                        class="text-decoration-none">@($"{product.CompanyName} {product.ModelName}")</a>
+                                </h5>
                                 <p class="card-text">Price: @product.Price.ToString("N0") USD</p>
-                                <p class="card-text">@product.Description</p>
                             </div>
                         </div>
                     </div>

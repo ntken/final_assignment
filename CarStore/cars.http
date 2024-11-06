@@ -1,7 +1,7 @@
 GET http://localhost:5237/cars
 
 ###
-GET http://localhost:5237/cars/1
+GET http://localhost:5237/cars/4
 
 ###
 POST http://localhost:5237/cars

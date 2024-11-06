@@ -40,9 +40,9 @@ public static class CarsEndpoints
             }
 
             var cars = await query
-                .Select(car => car.ToCarSummaryDto())
-                .AsNoTracking()
-                .ToListAsync();
+            .Select(car => car.ToCarSummaryDto())
+            .AsNoTracking()
+            .ToListAsync();
 
             return Results.Ok(cars);
         });
@@ -65,8 +65,8 @@ public static class CarsEndpoints
             await dbContext.SaveChangesAsync();
 
             return Results.CreatedAtRoute(
-                GetCarEndPointName, 
-                new { id = car.Id }, 
+                GetCarEndPointName,
+                new { id = car.Id },
                 car.ToCarDetailsDto());
         });
 

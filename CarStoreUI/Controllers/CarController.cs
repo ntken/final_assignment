@@ -20,12 +20,20 @@ public class CarController : Controller
         return View();
     }
 
-    // public async Task<IActionResult> Index()
-    // {
-    //     var cars = await _carService.GetCarsAsync();
-    //     return View(cars);
-    // }
+    // Action to display car details
+    [HttpGet("/Car/{id}")]
+    public async Task<IActionResult> Details(int id)
+    {
+        var car = await _carService.GetCarByIdAsync(id);
+        if (car == null)
+        {
+            return NotFound();
+        }
 
+        return View(car);
+    }
+
+    [Route("Car/ByFilter/{filterType}/{filterValue}")]
     public async Task<IActionResult> ByFilter(string filterType, string filterValue)
     {
         var cars = await _carService.GetCarsByFilterAsync(filterType, filterValue);

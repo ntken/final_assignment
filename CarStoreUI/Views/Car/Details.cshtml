@@ -1,0 +1,20 @@
+@model CarStoreUI.Models.CarDto
+
+@{
+    ViewData["Title"] = "Car Details";
+    Layout = "_Layout";
+}
+
+<div class="container mt-4">
+    <div class="card">
+        <img src="@Model.Image" class="card-img-top img-fluid car-detail-image" alt="@($"{Model.CompanyName} {Model.ModelName}")">
+        <div class="card-body">
+            <h3 class="card-title">@($"{Model.CompanyName} {Model.ModelName}")</h3>
+            <p class="card-text"><strong>Price:</strong> @Model.Price.ToString("N0") USD</p>
+            <p class="card-text"><strong>Description:</strong> @Model.Description</p>
+            <p class="card-text"><strong>Color:</strong> @Model.ColorName</p>
+            <p class="card-text"><strong>Released Date:</strong> @Model.ReleasedDate.ToShortDateString()</p>
+            <a href="@Url.Action("Index", "Home")" class="btn btn-secondary">Back to Home</a>
+        </div>
+    </div>
+</div>

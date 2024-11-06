@@ -14,16 +14,86 @@ public class CarService
 
     public async Task<List<CarDto>> GetCarsAsync()
     {
+        // Step 1: Fetch the list of cars from the API endpoint
         var response = await _httpClient.GetAsync("http://localhost:5237/cars");
         response.EnsureSuccessStatusCode();
+        var cars = await response.Content.ReadFromJsonAsync<List<CarDto>>() ?? new List<CarDto>();
 
-        return await response.Content.ReadFromJsonAsync<List<CarDto>>() ?? new List<CarDto>();
+        // Step 2: Fetch the lists of companies, models, and colors
+        var companies = await GetCompaniesAsync();
+        var models = await GetModelsAsync();
+        var colors = await GetColorsAsync();
+
+        // Step 3: Assign names to each car based on IDs
+        foreach (var car in cars)
+        {
+            car.CompanyName = companies.FirstOrDefault(c => c.Id == car.CompanyId)?.Name ?? "Unknown";
+            car.ModelName = models.FirstOrDefault(m => m.Id == car.ModelId)?.Name ?? "Unknown";
+            car.ColorName = colors.FirstOrDefault(col => col.Id == car.ColorId)?.Name ?? "Unknown";
+            // Console.WriteLine($"Car ID: {car.Id}, CompanyName: {car.CompanyName}, ModelName: {car.ModelName}, ColorName: {car.ColorName}");
+        }
+
+        // Console.WriteLine("Companies:");
+        // foreach (var company in companies)
+        // {
+        //     Console.WriteLine($"Id: {company.Id}, Name: {company.Name}");
+        // }
+
+        // Console.WriteLine("Models:");
+        // foreach (var model in models)
+        // {
+        //     Console.WriteLine($"Id: {model.Id}, Name: {model.Name}");
+        // }
+
+        // Console.WriteLine("Colors:");
+        // foreach (var color in colors)
+        // {
+        //     Console.WriteLine($"Id: {color.Id}, Name: {color.Name}");
+        // }
+
+        // foreach (var car in cars)
+        // {
+        //     Console.WriteLine($"Car ID: {car.Id}, CompanyId: {car.CompanyId}, ModelId: {car.ModelId}, ColorId: {car.ColorId}");
+
+        //     var company = companies.FirstOrDefault(c => c.Id == car.CompanyId);
+        //     var model = models.FirstOrDefault(m => m.Id == car.ModelId);
+        //     var color = colors.FirstOrDefault(col => col.Id == car.ColorId);
+
+        //     car.CompanyName = company?.Name ?? "Unknown";
+        //     car.ModelName = model?.Name ?? "Unknown";
+        //     car.ColorName = color?.Name ?? "Unknown";
+
+        //     Console.WriteLine($"Matched CompanyName: {car.CompanyName}, ModelName: {car.ModelName}, ColorName: {car.ColorName}");
+        // }
+
+
+        return cars;
     }
 
     public async Task<CarDto?> GetCarByIdAsync(int id)
     {
         var response = await _httpClient.GetAsync($"http://localhost:5237/cars/{id}");
-        return response.IsSuccessStatusCode ? await response.Content.ReadFromJsonAsync<CarDto>() : null;
+        if (response.IsSuccessStatusCode)
+        {
+            var car = await response.Content.ReadFromJsonAsync<CarDto>();
+
+            if (car != null)
+            {
+                // Lấy thêm thông tin Company, Model, và Color
+                var companies = await GetCompaniesAsync();
+                var models = await GetModelsAsync();
+                var colors = await GetColorsAsync();
+
+                // Thay vì so sánh với string, chúng ta so sánh Id để lấy tên
+                car.CompanyName = companies.FirstOrDefault(c => c.Id == car.CompanyId)?.Name ?? "Unknown";
+                car.ModelName = models.FirstOrDefault(m => m.Id == car.ModelId)?.Name ?? "Unknown";
+                car.ColorName = colors.FirstOrDefault(col => col.Id == car.ColorId)?.Name ?? "Unknown";
+            }
+
+            return car;
+        }
+
+        return null;
     }
 
     public async Task CreateCarAsync(CarDto car)
@@ -43,10 +113,28 @@ public class CarService
 
     public async Task<List<CarDto>> GetCarsByFilterAsync(string filterType, string filterValue)
     {
-        var response = await _httpClient.GetAsync($"http://localhost:5237/cars?{filterType}={filterValue}");
+        // Construct the URL based on the filter type and value
+        string url = $"http://localhost:5237/cars?{filterType}={filterValue}";
+
+        var response = await _httpClient.GetAsync(url);
         response.EnsureSuccessStatusCode();
 
-        return await response.Content.ReadFromJsonAsync<List<CarDto>>() ?? new List<CarDto>();
+        var cars = await response.Content.ReadFromJsonAsync<List<CarDto>>() ?? new List<CarDto>();
+
+        // Fetch additional data for mapping names
+        var companies = await GetCompaniesAsync();
+        var models = await GetModelsAsync();
+        var colors = await GetColorsAsync();
+
+        // Assign company, model, and color names to each car
+        foreach (var car in cars)
+        {
+            car.CompanyName = companies.FirstOrDefault(c => c.Id == car.CompanyId)?.Name ?? "Unknown";
+            car.ModelName = models.FirstOrDefault(m => m.Id == car.ModelId)?.Name ?? "Unknown";
+            car.ColorName = colors.FirstOrDefault(col => col.Id == car.ColorId)?.Name ?? "Unknown";
+        }
+
+        return cars;
     }
 
     public async Task<List<CompanyDto>> GetCompaniesAsync()

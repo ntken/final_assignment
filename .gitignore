@@ -1,6 +1,7 @@
 # Ignore build output directories
 bin/
 obj/
+CarStore.zip
 
 # Ignore user-specific files
 .vscode/
@@ -22,3 +23,5 @@ CarStore/Data/Migrations/
 # Ignore temporary files
 *.tmp
 *.log
+CarStore\CarStore.db-wal
+CarStore\CarStore.db-shm

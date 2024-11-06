@@ -1,10 +1,24 @@
 /* Category Menu Styles */
-.category-menu {
+.category-menu-wrapper {
   background-color: #f8f9fa;
-  padding: 15px;
   border-radius: 5px;
-  border: 1px solid #ddd; /* Đường viền nhẹ để phân cách */
-  height: auto; /* Chiều cao tự động điều chỉnh dựa trên nội dung */
+  border: 1px solid #ddd;
+  position: sticky; /* Đảm bảo toàn bộ category menu wrapper được cố định */
+  top: 0;
+  z-index: 10;
+}
+
+.category-menu-header {
+  background-color: #f8f9fa;
+  padding: 10px;
+  border-bottom: 1px solid #ddd; /* Tạo viền dưới để phân cách phần header */
+}
+
+.category-menu-list {
+  max-height: 70vh; /* Đặt chiều cao tối đa để menu có thể cuộn */
+  overflow-y: auto; /* Cho phép cuộn nội dung của danh sách mục */
+  padding: 10px;
+  background-color: #f8f9fa;
 }
 
 /* Featured Products Styles */
@@ -29,8 +43,9 @@
 }
 
 .card-img-top {
-  height: 150px; /* Chiều cao cố định cho ảnh */
-  object-fit: cover; /* Giữ tỉ lệ ảnh */
+  width: 100%; /* Đảm bảo ảnh phủ toàn bộ chiều ngang của card */
+  height: 200px; /* Điều chỉnh chiều cao phù hợp */
+  object-fit: cover; /* Giữ tỉ lệ ảnh mà không bị kéo dài hoặc bóp méo */
 }
 
 .card-body {
@@ -47,6 +62,14 @@
   margin-bottom: 10px; /* Khoảng cách dưới tiêu đề */
 }
 
+.car-detail-image {
+  width: 100%; /* Đảm bảo ảnh chiếm đủ chiều ngang của thẻ card */
+  height: auto; /* Điều chỉnh chiều cao tự động để giữ nguyên tỉ lệ ảnh */
+  object-fit: contain; /* Đảm bảo ảnh nằm gọn trong khung mà không bị cắt */
+  max-height: 500px; /* Giới hạn chiều cao tối đa để ảnh không quá lớn */
+  margin: 0 auto; /* Đảm bảo ảnh nằm ở trung tâm của thẻ card */
+}
+
 .btn-primary,
 .btn-outline-secondary {
   margin-top: 10px;
@@ -60,12 +83,12 @@
 
 .featured-product .col-sm-6,
 .featured-product .col-md-4 {
-  display: flex;
-  flex-direction: column;
+    padding-bottom: 15px; /* Tạo khoảng cách giữa các card */
 }
 
 /* Global Styles */
-html, body {
+html,
+body {
   height: 100%;
 }
 
@@ -74,12 +97,18 @@ body {
   padding: 0;
   font-family: Arial, sans-serif;
   overflow-x: hidden; /* Ẩn thanh cuộn ngang */
+  display: flex;
+  flex-direction: column;
 }
 
-.footer {
+main {
+  flex: 1;
+}
+
+footer {
   text-align: center;
   padding: 10px 0;
   background-color: #f8f9fa;
   border-top: 1px solid #ddd;
-  margin-top: 20px;
+  margin-top: auto;
 }

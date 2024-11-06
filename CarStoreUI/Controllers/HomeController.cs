@@ -18,16 +18,14 @@ public class HomeController : Controller
 
     public async Task<IActionResult> Index()
     {
-        // Get data from the API using CarService
         var companies = await _carService.GetCompaniesAsync();
         var models = await _carService.GetModelsAsync();
         var colors = await _carService.GetColorsAsync();
         var featuredProducts = await _carService.GetCarsAsync();
 
-        // Set data to ViewBag (Use the correct DTOs)
-        ViewBag.Companies = companies;  // Companies is a list of CompanyDto
-        ViewBag.Models = models;        // Models is a list of ModelDto
-        ViewBag.Colors = colors;        // Colors is a list of ColorDto
+        ViewBag.Companies = companies;
+        ViewBag.Models = models;
+        ViewBag.Colors = colors;
 
         // Only take the first 3 cars for featured products
         ViewBag.FeaturedProducts = featuredProducts.Take(3).ToList();
