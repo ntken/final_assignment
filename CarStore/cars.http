@@ -8,10 +8,10 @@ POST http://localhost:5237/cars
 Content-Type: application/json
 
 {
-    "companyId": 5,
-    "modelId": 5,
-    "colorId": 5,
-    "price": 57000,
+    "companyId": 1,
+    "modelId": 2,
+    "colorId": 3,
+    "price": 47000,
     "releasedDate": "2006-09-11",
     "description": "Toyota Camry [2002-2006] V3 is the top model in the Camry [2002-2006] lineup and the price of Camry [2002-2006] top model is Rs. 21.58 Lakh.",
     "image": "/images/carE.jpg"
@@ -22,11 +22,13 @@ PUT http://localhost:5237/cars/2
 Content-Type: application/json
 
 {
-    "companyId": 3,
-    "modelId": 3,
+    "companyId": 1,
+    "modelId": 2,
     "colorId": 3,
-    "price": 50000,
-    "releasedDate": "2018-09-22"
+    "price": 47000,
+    "releasedDate": "2017-09-22",
+    "description": "A car is a vehicle that has wheels, carries a small number of passengers, and is moved by an engine or a motor",
+    "image": "images/carE.jpg"
 }
 
 ###

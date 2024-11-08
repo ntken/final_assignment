@@ -32,41 +32,6 @@ public class CarService
             car.ColorName = colors.FirstOrDefault(col => col.Id == car.ColorId)?.Name ?? "Unknown";
             // Console.WriteLine($"Car ID: {car.Id}, CompanyName: {car.CompanyName}, ModelName: {car.ModelName}, ColorName: {car.ColorName}");
         }
-
-        // Console.WriteLine("Companies:");
-        // foreach (var company in companies)
-        // {
-        //     Console.WriteLine($"Id: {company.Id}, Name: {company.Name}");
-        // }
-
-        // Console.WriteLine("Models:");
-        // foreach (var model in models)
-        // {
-        //     Console.WriteLine($"Id: {model.Id}, Name: {model.Name}");
-        // }
-
-        // Console.WriteLine("Colors:");
-        // foreach (var color in colors)
-        // {
-        //     Console.WriteLine($"Id: {color.Id}, Name: {color.Name}");
-        // }
-
-        // foreach (var car in cars)
-        // {
-        //     Console.WriteLine($"Car ID: {car.Id}, CompanyId: {car.CompanyId}, ModelId: {car.ModelId}, ColorId: {car.ColorId}");
-
-        //     var company = companies.FirstOrDefault(c => c.Id == car.CompanyId);
-        //     var model = models.FirstOrDefault(m => m.Id == car.ModelId);
-        //     var color = colors.FirstOrDefault(col => col.Id == car.ColorId);
-
-        //     car.CompanyName = company?.Name ?? "Unknown";
-        //     car.ModelName = model?.Name ?? "Unknown";
-        //     car.ColorName = color?.Name ?? "Unknown";
-
-        //     Console.WriteLine($"Matched CompanyName: {car.CompanyName}, ModelName: {car.ModelName}, ColorName: {car.ColorName}");
-        // }
-
-
         return cars;
     }
 
@@ -160,4 +125,17 @@ public class CarService
 
         return await response.Content.ReadFromJsonAsync<List<ColorDto>>() ?? new List<ColorDto>();
     }
+
+    public async Task<List<ReviewDto>> GetReviewsAsync(int carId)
+    {
+        var response = await _httpClient.GetAsync($"http://localhost:5237/reviews/{carId}");
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<List<ReviewDto>>() ?? new List<ReviewDto>();
+    }
+
+    public async Task AddReviewAsync(ReviewDto reviewDto)
+    {
+        await _httpClient.PostAsJsonAsync("http://localhost:5237/reviews", reviewDto);
+    }
+
 }

@@ -28,6 +28,17 @@
   border-radius: 5px;
 }
 
+.footer {
+  bottom: 0;
+  width: 100%;
+  white-space: nowrap;
+  line-height: 20px;
+  text-align: center;
+  padding: 10px 0;
+  background-color: #f8f9fa;
+  margin-top: 0;
+}
+
 /* Card Styles */
 .card {
   border: none;
@@ -63,10 +74,10 @@
 }
 
 .car-detail-image {
-  width: 100%; /* Đảm bảo ảnh chiếm đủ chiều ngang của thẻ card */
+  width: 50%; /* Đảm bảo ảnh chiếm đủ chiều ngang của thẻ card */
   height: auto; /* Điều chỉnh chiều cao tự động để giữ nguyên tỉ lệ ảnh */
   object-fit: contain; /* Đảm bảo ảnh nằm gọn trong khung mà không bị cắt */
-  max-height: 500px; /* Giới hạn chiều cao tối đa để ảnh không quá lớn */
+  max-height: 300px; /* Giới hạn chiều cao tối đa để ảnh không quá lớn */
   margin: 0 auto; /* Đảm bảo ảnh nằm ở trung tâm của thẻ card */
 }
 
@@ -77,7 +88,7 @@
 
 /* Row of Cards to Align Heights */
 .featured-product .row {
-  display: flex;
+  display: flexbox;
   flex-wrap: wrap;
 }
 
@@ -87,28 +98,35 @@
 }
 
 /* Global Styles */
-html,
-body {
+html, body {
   height: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
 }
 
 body {
-  margin: 0;
-  padding: 0;
   font-family: Arial, sans-serif;
   overflow-x: hidden; /* Ẩn thanh cuộn ngang */
   display: flex;
-  flex-direction: column;
 }
 
 main {
   flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
-footer {
-  text-align: center;
-  padding: 10px 0;
-  background-color: #f8f9fa;
-  border-top: 1px solid #ddd;
-  margin-top: auto;
+/* Áp dụng cuộn dọc cho phần nội dung của Car Detail */
+.car-detail-container {
+  padding: 20px; /* Thêm khoảng cách cho phần nội dung */
+  overflow: visible;
+}
+
+.content-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }

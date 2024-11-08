@@ -4,17 +4,107 @@
     ViewData["Title"] = "Car Details";
     Layout = "_Layout";
 }
-
-<div class="container mt-4">
-    <div class="card">
-        <img src="@Model.Image" class="card-img-top img-fluid car-detail-image" alt="@($"{Model.CompanyName} {Model.ModelName}")">
-        <div class="card-body">
-            <h3 class="card-title">@($"{Model.CompanyName} {Model.ModelName}")</h3>
-            <p class="card-text"><strong>Price:</strong> @Model.Price.ToString("N0") USD</p>
-            <p class="card-text"><strong>Description:</strong> @Model.Description</p>
-            <p class="card-text"><strong>Color:</strong> @Model.ColorName</p>
-            <p class="card-text"><strong>Released Date:</strong> @Model.ReleasedDate.ToShortDateString()</p>
-            <a href="@Url.Action("Index", "Home")" class="btn btn-secondary">Back to Home</a>
+<section role="main" class="pb-3">
+    <div class="car-detail-container">
+        <h2 class="h5 mb-3">Car Detail</h2>
+        <div class="card">
+            <img src="@Model.Image" class="card-img-top img-fluid car-detail-image"
+                alt="@($"{Model.CompanyName} {Model.ModelName}")">
+            <div class="card-body">
+                <h3 class="card-title">@($"{Model.CompanyName} {Model.ModelName}")</h3>
+                <p class="card-text"><strong>Price:</strong> @Model.Price.ToString("N0") USD</p>
+                <p class="card-text"><strong>Description:</strong> @Model.Description</p>
+                <p class="card-text"><strong>Color:</strong> @Model.ColorName</p>
+                <p class="card-text"><strong>Released Date:</strong> @Model.ReleasedDate.ToShortDateString()</p>
+                <a href="@Url.Action("Index", "Home")" class="btn btn-secondary">Back to Home</a>
+            </div>
+        </div>
+        <div class="reviews-section">
+            <h3>Customer Reviews</h3>
+            @if (ViewBag.Reviews != null && ViewBag.Reviews.Count > 0)
+            {
+                foreach (var review in ViewBag.Reviews)
+                {
+                    <div class="review">
+                        <p><strong>@review.UserName</strong> - @review.ReviewDate.ToShortDateString()</p>
+                        <p>Rating: @review.Rating/5</p>
+                        <p>@review.Comment</p>
+                    </div>
+                }
+            }
+            else
+            {
+                <p>No reviews yet. Be the first to review!</p>
+            }
+        </div>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#reviewModal">
+            Leave a Review
+        </button>
+        <div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="reviewModalLabel">Leave a Review</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="reviewForm">
+                            <div class="mb-3">
+                                <label for="rating" class="form-label">Rating*</label>
+                                <select id="rating" class="form-control" required>
+                                    <option value="5">5 - Excellent</option>
+                                    <option value="4">4 - Good</option>
+                                    <option value="3">3 - Average</option>
+                                    <option value="2">2 - Poor</option>
+                                    <option value="1">1 - Terrible</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="comment" class="form-label">Comment*</label>
+                                <textarea id="comment" class="form-control" required></textarea>
+                            </div>
+                            <div class="mb-4">
+                                <label for="email" class="form-label">Email*</label>
+                                <input type="text" id="email" class="form-control" required></input>
+                            </div>
+                            <button type="button" class="btn btn-primary" onclick="submitReview()">Submit
+                                Review</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-</div>
+</section>
+
+<script>
+    async function submitReview() {
+        const carId = @Model.Id;
+        const rating = document.getElementById('rating').value;
+        const comment = document.getElementById('comment').value;
+        const email = document.getElementById('email').value;
+
+        // Kiểm tra các trường bắt buộc
+        if (!rating || !comment || !email) {
+            alert("Please fill out all required fields: Rating, Comment, and Email.");
+            return;
+        }
+
+        const review = {
+            CarId: carId,
+            Rating: parseInt(rating),
+            Comment: comment,
+            Email: email // Replace this with actual user input if needed
+        };
+
+        await fetch('/reviews', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(review)
+        });
+
+        location.reload();
+    }
+</script>

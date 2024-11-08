@@ -12,6 +12,7 @@ app.MapCarsEndPoints();
 app.MapCompanyEndpoints();
 app.MapModelEndpoints();
 app.MapColorEndpoints();
+app.MapReviewEndpoints();
 
 await app.MigrateDbAsync();
 

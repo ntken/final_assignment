@@ -29,7 +29,8 @@ public class CarController : Controller
         {
             return NotFound();
         }
-
+        var reviews = await _carService.GetReviewsAsync(id);
+        ViewBag.Reviews = reviews;
         return View(car);
     }
 

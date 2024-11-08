@@ -14,7 +14,11 @@
                 <div class="card">
                     <img src="@car.Image" class="card-img-top" alt="@($"{car.CompanyName} {car.ModelName}")">
                     <div class="card-body">
-                        <h5 class="card-title">@($"{car.CompanyName} {car.ModelName}")</h5>
+                        <h5 class="card-title">
+                            <a href="@Url.Action("Details", "Car", new { id = car.Id })" class="text-decoration-none">
+                                @($"{car.CompanyName} {car.ModelName}")
+                            </a>
+                        </h5>
                         <p class="card-text">Price: @car.Price.ToString("N0") USD</p>
                         <p class="card-text">Color: @car.ColorName</p>
                     </div>

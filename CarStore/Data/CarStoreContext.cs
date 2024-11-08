@@ -16,6 +16,8 @@ public class CarStoreContext(DbContextOptions<CarStoreContext> options)
 
     public DbSet<Color> Colors => Set<Color>();
 
+    public DbSet<Review> Reviews => Set<Review>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Company>().HasData(
