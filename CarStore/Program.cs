@@ -6,7 +6,20 @@ var builder = WebApplication.CreateBuilder(args);
 var connString = builder.Configuration.GetConnectionString("CarStore");
 builder.Services.AddSqlite<CarStoreContext>(connString);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins",
+        policy =>
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        });
+});
+
 var app = builder.Build();
+
+app.UseCors("AllowAllOrigins");
 
 app.MapCarsEndPoints();
 app.MapCompanyEndpoints();

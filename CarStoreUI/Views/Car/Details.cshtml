@@ -26,7 +26,7 @@
                 foreach (var review in ViewBag.Reviews)
                 {
                     <div class="review">
-                        <p><strong>@review.UserName</strong> - @review.ReviewDate.ToShortDateString()</p>
+                        <p><strong>@review.UserEmail</strong> - @review.ReviewDate.ToShortDateString()</p>
                         <p>Rating: @review.Rating/5</p>
                         <p>@review.Comment</p>
                     </div>
@@ -91,20 +91,32 @@
         }
 
         const review = {
-            CarId: carId,
-            Rating: parseInt(rating),
-            Comment: comment,
-            Email: email // Replace this with actual user input if needed
+            carId: carId,
+            rating: parseInt(rating),
+            comment: comment,
+            userEmail: email // Replace this with actual user input if needed
         };
 
-        await fetch('/reviews', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(review)
-        });
+        try {
+            const response = await fetch('http://localhost:5237/reviews/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(review)
+            });
+            if (response.ok) {
+                alert("Review submitted successfully!");
+                location.reload(); // Tải lại trang để hiển thị review mới
+            } else {
+                const errorData = await response.json();
+                alert("Failed to submit review: " + (errorData.message || "Unknown error"));
+            }
+        } catch (error) {
+            console.error("Error submitting review:", error);
+            alert("An error occurred while submitting the review.");
+        }
 
-        location.reload();
+        @* location.reload(); *@
     }
 </script>

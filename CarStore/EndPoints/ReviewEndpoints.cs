@@ -26,6 +26,7 @@ namespace CarStore.EndPoints
             group.MapPost("/", async (ReviewDto reviewDto, CarStoreContext dbContext) =>
             {
                 var review = reviewDto.ToEntity();
+                review.ReviewDate = DateTime.Now;
                 dbContext.Reviews.Add(review);
                 await dbContext.SaveChangesAsync();
                 return Results.Created($"/reviews/{review.Id}", review.ToDto());
