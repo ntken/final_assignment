@@ -1,7 +1,7 @@
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
-using CarStoreUI.Models;
+using CarShop.Shared.Models;
 
 public class CarService
 {

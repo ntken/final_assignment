@@ -8,6 +8,7 @@ public static class ColorMapping
 {
     public static ColorDto ToDto(this Color color)
     {
-        return new ColorDto(color.Id, color.Name);
+        var colorDto = new ColorDto(color.Id, color.Name ?? "Unknown Color");
+        return colorDto;
     }
 }

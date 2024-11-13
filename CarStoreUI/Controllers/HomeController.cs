@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using CarShop.Shared.Models;
 using CarStoreUI.Models;
 using CarStoreUI.Services;
 

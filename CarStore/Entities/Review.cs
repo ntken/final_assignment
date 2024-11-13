@@ -8,6 +8,6 @@ namespace CarStore.Entities
         public int Rating { get; set; } // Rating out of 5
         public string? Comment { get; set; }
         public string? UserEmail { get; set; }
-        public DateTime ReviewDate { get; set; } = DateTime.Now;
+        public DateTime ReviewDate { get; set; }
     }
 }

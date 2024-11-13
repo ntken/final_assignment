@@ -8,6 +8,8 @@ public static class CompanyMapping
 {
     public static CompanyDto ToDto(this Company company)
     {
-        return new CompanyDto(company.Id, company.Name);
+        var companyDto = new CompanyDto(company.Id, company.Name ?? "Unknown Company");
+        return companyDto;
     }
+
 }

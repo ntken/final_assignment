@@ -26,17 +26,17 @@ public static class CarsEndpoints
             // Áp dụng bộ lọc nếu có tham số truy vấn
             if (!string.IsNullOrEmpty(company))
             {
-                query = query.Where(car => car.Company != null && car.Company.Name.ToLower() == company.ToLower());
+                query = query.Where(car => car.Company != null && car.Company.Name != null && car.Company.Name.ToLower() == company.ToLower());
             }
 
             if (!string.IsNullOrEmpty(model))
             {
-                query = query.Where(car => car.Model != null && car.Model.Name.ToLower() == model.ToLower());
+                query = query.Where(car => car.Model != null && car.Model.Name != null && car.Model.Name.ToLower() == model.ToLower());
             }
 
             if (!string.IsNullOrEmpty(color))
             {
-                query = query.Where(car => car.Color != null && car.Color.Name.ToLower() == color.ToLower());
+                query = query.Where(car => car.Color != null && car.Color.Name != null && car.Color.Name.ToLower() == color.ToLower());
             }
 
             var cars = await query
