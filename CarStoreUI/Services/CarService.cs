@@ -138,4 +138,12 @@ public class CarService
         await _httpClient.PostAsJsonAsync("http://localhost:5237/reviews", reviewDto);
     }
 
+    public async Task<double?> GetAverageRatingAsync(int carId)
+    {
+        var response = await _httpClient.GetAsync($"http://localhost:5237/reviews/average-rating/{carId}");
+        response.EnsureSuccessStatusCode();
+
+        var averageRating = await response.Content.ReadFromJsonAsync<double?>();
+        return averageRating;
+    }
 }

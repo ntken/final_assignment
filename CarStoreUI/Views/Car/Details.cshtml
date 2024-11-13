@@ -12,6 +12,10 @@
                 alt="@($"{Model.CompanyName} {Model.ModelName}")">
             <div class="card-body">
                 <h3 class="card-title">@($"{Model.CompanyName} {Model.ModelName}")</h3>
+                <p class="card-text">
+                    Average Rating: @(Model.AverageRating.HasValue && Model.AverageRating > 0 ?
+                    Model.AverageRating?.ToString("N1") + "/5" : "Not rating yet")
+                </p>
                 <p class="card-text"><strong>Price:</strong> @Model.Price.ToString("N0") USD</p>
                 <p class="card-text"><strong>Description:</strong> @Model.Description</p>
                 <p class="card-text"><strong>Color:</strong> @Model.ColorName</p>
@@ -117,6 +121,6 @@
             alert("An error occurred while submitting the review.");
         }
 
-        @* location.reload(); *@
+    @* location.reload(); *@
     }
 </script>

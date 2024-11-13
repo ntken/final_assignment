@@ -23,7 +23,10 @@ public class HomeController : Controller
         var models = await _carService.GetModelsAsync();
         var colors = await _carService.GetColorsAsync();
         var featuredProducts = await _carService.GetCarsAsync();
-
+        foreach (var car in featuredProducts)
+        {
+            car.AverageRating = await _carService.GetAverageRatingAsync(car.Id);
+        }
         ViewBag.Companies = companies;
         ViewBag.Models = models;
         ViewBag.Colors = colors;

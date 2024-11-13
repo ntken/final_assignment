@@ -107,6 +107,10 @@
                                         class="text-decoration-none">@($"{product.CompanyName} {product.ModelName}")</a>
                                 </h5>
                                 <p class="card-text">Price: @product.Price.ToString("N0") USD</p>
+                                <p class="card-text">
+                                    Average Rating: @(product.AverageRating > 0 ? product.AverageRating.ToString("N1") +
+                                "/5" : "Not rating yet")
+                                </p>
                             </div>
                         </div>
                     </div>

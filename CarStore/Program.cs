@@ -26,6 +26,7 @@ app.MapCompanyEndpoints();
 app.MapModelEndpoints();
 app.MapColorEndpoints();
 app.MapReviewEndpoints();
+app.MapUserEndpoints();
 
 await app.MigrateDbAsync();
 

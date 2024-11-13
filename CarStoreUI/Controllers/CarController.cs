@@ -15,6 +15,10 @@ public class CarController : Controller
     {
         // Lấy danh sách xe làm Featured Products
         var featuredProducts = await _carService.GetCarsAsync();
+        foreach (var car in featuredProducts)
+        {
+            car.AverageRating = await _carService.GetAverageRatingAsync(car.Id);
+        }
         ViewBag.FeaturedProducts = featuredProducts;
 
         return View();
@@ -25,7 +29,11 @@ public class CarController : Controller
     public async Task<IActionResult> Details(int id)
     {
         var car = await _carService.GetCarByIdAsync(id);
-        if (car == null)
+        if (car != null)
+        {
+            car.AverageRating = await _carService.GetAverageRatingAsync(car.Id);
+        }
+        else if (car == null)
         {
             return NotFound();
         }
@@ -38,6 +46,10 @@ public class CarController : Controller
     public async Task<IActionResult> ByFilter(string filterType, string filterValue)
     {
         var cars = await _carService.GetCarsByFilterAsync(filterType, filterValue);
+        foreach (var car in cars)
+        {
+            car.AverageRating = await _carService.GetAverageRatingAsync(car.Id);
+        }
         return View("Index", cars);
     }
 }

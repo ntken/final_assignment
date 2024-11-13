@@ -10,6 +10,7 @@ builder.Services.AddHttpClient("CarStoreClient", client =>
     client.DefaultRequestHeaders.Add("Accept", "application/json");
 });
 builder.Services.AddTransient<CarService>();
+builder.Services.AddTransient<UserService>();
 
 builder.Services.AddHttpClient<CarService>();
 

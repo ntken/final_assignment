@@ -10,3 +10,6 @@ Content-Type: application/json
     "comment": "abc",
     "rating": 5
 }
+
+###
+GET http://localhost:5237/reviews/average-rating/4

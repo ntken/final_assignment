@@ -32,6 +32,16 @@ namespace CarStore.EndPoints
                 return Results.Created($"/reviews/{review.Id}", review.ToDto());
             });
 
+            group.MapGet("/average-rating/{carId}", async (int carId, CarStoreContext dbContext) =>
+{
+    var averageRating = await dbContext.Reviews
+        .Where(r => r.CarId == carId)
+        .AverageAsync(r => (double?)r.Rating) ?? 0;
+
+    return Results.Ok(averageRating);
+});
+
+
             return group;
         }
     }
