@@ -130,3 +130,8 @@ main {
   display: flex;
   flex-direction: column;
 }
+
+.text-danger {
+  margin-top: 5px; /* Điều chỉnh khoảng cách */
+  display: block; /* Đảm bảo dòng lỗi hiển thị ở dòng riêng */
+}

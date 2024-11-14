@@ -16,12 +16,12 @@
                 </div>
                 <div class="mb-3">
                     <label asp-for="Email" class="form-label">Email:</label>
-                    <input asp-for="Email" class="form-control" />
+                    <input asp-for="Email" class="form-control" id="Email" />
                     <span asp-validation-for="Email" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
                     <label asp-for="Password" class="form-label">Password:</label>
-                    <input asp-for="Password" type="password" class="form-control" />
+                    <input asp-for="Password" type="password" class="form-control" id="Password" />
                     <span asp-validation-for="Password" class="text-danger"></span>
                 </div>
                 <button type="submit" class="btn btn-primary w-100">Register</button>
@@ -29,3 +29,8 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
+    <script src="~/js/register-validation.js"></script>
+}
