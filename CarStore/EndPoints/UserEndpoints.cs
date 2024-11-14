@@ -1,0 +1,47 @@
+using CarStore.Data;
+using CarStore.Entities;
+using CarShop.Shared.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
+using System.Text;
+
+namespace CarStore.EndPoints;
+
+public static class UserEndpoints
+{
+    public static RouteGroupBuilder MapUserEndpoints(this WebApplication app)
+    {
+        var group = app.MapGroup("users");
+
+        // POST /users/register
+        group.MapPost("/register", async (RegisterUserDto registerDto, CarStoreContext dbContext) =>
+        {
+            // Kiểm tra nếu email đã tồn tại
+            var existingUser = await dbContext.Users
+                .FirstOrDefaultAsync(u => u.Email == registerDto.Email);
+            if (existingUser != null)
+            {
+                return Results.Conflict("Email already registered.");
+            }
+
+            // Mã hóa mật khẩu
+            using var sha256 = SHA256.Create();
+            var passwordHash = Convert.ToBase64String(sha256.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password)));
+
+            // Tạo người dùng mới
+            var user = new User
+            {
+                Email = registerDto.Email,
+                PasswordHash = passwordHash,
+                FullName = registerDto.FullName
+            };
+
+            dbContext.Users.Add(user);
+            await dbContext.SaveChangesAsync();
+
+            return Results.Ok("User registered successfully.");
+        });
+
+        return group;
+    }
+}
