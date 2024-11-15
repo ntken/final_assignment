@@ -34,5 +34,25 @@ namespace CarStoreUI.Services
                 return !string.IsNullOrWhiteSpace(errorMessage) ? errorMessage : "An error occurred while registering the user.";
             }
         }
+
+        public async Task<string> LoginUserAsync(LoginUserDto user)
+        {
+            var response = await _httpClient.PostAsJsonAsync("http://localhost:5237/users/login", user);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return "Login successful.";
+            }
+            else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                return "Invalid email or password.";
+            }
+            else
+            {
+                var errorMessage = await response.Content.ReadAsStringAsync();
+                return !string.IsNullOrWhiteSpace(errorMessage) ? errorMessage : "An error occurred during login.";
+            }
+        }
+
     }
 }

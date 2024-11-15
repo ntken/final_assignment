@@ -27,6 +27,13 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-end">
                     <ul class="navbar-nav">
                         @if (!(ViewContext.RouteData.Values["controller"]?.ToString() == "Account" &&
+                        ViewContext.RouteData.Values["action"]?.ToString() == "Login"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Login</a>
+                            </li>
+                        }
+                        @if (!(ViewContext.RouteData.Values["controller"]?.ToString() == "Account" &&
                         ViewContext.RouteData.Values["action"]?.ToString() == "Register"))
                         {
                             <li class="nav-item">
@@ -48,6 +55,33 @@
             </div>
             <div class="toast-body">
                 User registered successfully!
+            </div>
+        </div>
+    </div>
+    <div aria-live="polite" aria-atomic="true"
+        class="position-fixed d-flex justify-content-center align-items-center w-100" style="z-index: 1080; top: 20%;">
+        <div id="loginSuccessToast" class="toast align-items-center text-center" role="alert" aria-live="assertive"
+            aria-atomic="true" style="width: 300px;">
+            <div class="toast-header">
+                <strong class="me-auto">Notification</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                Login successful!
+            </div>
+        </div>
+    </div>
+    <div aria-live="polite" aria-atomic="true"
+        class="position-fixed d-flex justify-content-center align-items-center w-100" style="z-index: 1080; top: 20%;">
+        <div id="loginFailedToast" class="toast align-items-center text-center bg-danger text-white" role="alert"
+            aria-live="assertive" aria-atomic="true" style="width: 300px;">
+            <div class="toast-header bg-danger text-white">
+                <strong class="me-auto">Login Failed</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"
+                    aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                Invalid email or password.
             </div>
         </div>
     </div>
@@ -88,15 +122,29 @@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const urlParams = new URLSearchParams(window.location.search);
+
             if (urlParams.get("registration") === "success") {
                 const toastElement = document.getElementById("registerSuccessToast");
-                const toast = new bootstrap.Toast(toastElement, { autohide: false }); // Đặt autohide thành false để giữ toast đến khi người dùng đóng
+                const toast = new bootstrap.Toast(toastElement, { autohide: false });
                 toast.show();
-
-                // Lắng nghe sự kiện đóng toast và chuyển hướng về trang chủ
                 toastElement.addEventListener('hidden.bs.toast', function () {
                     window.location.href = '/';
                 });
+            }
+
+            if (urlParams.get("login") === "success") {
+                const loginToastElement = document.getElementById("loginSuccessToast");
+                const loginToast = new bootstrap.Toast(loginToastElement, { autohide: false });
+                loginToast.show();
+                loginToastElement.addEventListener('hidden.bs.toast', function () {
+                    window.location.href = '/';
+                });
+            }
+
+            if (urlParams.get("login") === "failed") {
+                const loginFailedToastElement = document.getElementById("loginFailedToast");
+                const loginFailedToast = new bootstrap.Toast(loginFailedToastElement, { autohide: false });
+                loginFailedToast.show();
             }
         });
     </script>

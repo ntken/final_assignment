@@ -48,5 +48,32 @@ namespace CarStoreUI.Controllers
 
             return View(model);
         }
+
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginUserDto model)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await _userService.LoginUserAsync(model);
+                if (result == "Login successful.")
+                {
+                    // Đăng nhập thành công, chuyển hướng với query parameter "login=success"
+                    return RedirectToAction("Login", new { login = "success" });
+                }
+                else
+                {
+                    // Đăng nhập thất bại, chuyển hướng với query parameter "login=failed"
+                    return RedirectToAction("Login", new { login = "failed" });
+                }
+            }
+            return View(model);
+        }
+
     }
 }
