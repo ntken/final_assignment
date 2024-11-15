@@ -26,16 +26,18 @@
 
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-end">
                     <ul class="navbar-nav">
-                        @if (!(ViewContext.RouteData.Values["controller"]?.ToString() == "Account" &&
-                        ViewContext.RouteData.Values["action"]?.ToString() == "Login"))
+                        @if (Context.Session.GetString("IsLoggedIn") == "true")
                         {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Logout">Logout</a>
+                            </li>
+                        }
+                        else
+                        {
+                            @* Chỉ hiển thị Login và Register khi người dùng chưa đăng nhập *@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Login</a>
                             </li>
-                        }
-                        @if (!(ViewContext.RouteData.Values["controller"]?.ToString() == "Account" &&
-                        ViewContext.RouteData.Values["action"]?.ToString() == "Register"))
-                        {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-controller="Account" asp-action="Register">Register</a>
                             </li>

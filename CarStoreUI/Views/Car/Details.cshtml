@@ -1,9 +1,13 @@
 @model CarShop.Shared.Models.CarDto
+@inject IHttpContextAccessor HttpContextAccessor
 
 @{
     ViewData["Title"] = "Car Details";
     Layout = "_Layout";
+    bool isUserLoggedIn = HttpContextAccessor.HttpContext?.Session?.GetString("UserEmail") != null;
+    string userEmail = HttpContextAccessor.HttpContext?.Session?.GetString("UserEmail") ?? "";
 }
+
 <section role="main" class="pb-3">
     <div class="car-detail-container">
         <h2 class="h5 mb-3">Car Detail</h2>
@@ -23,6 +27,7 @@
                 <a href="@Url.Action("Index", "Home")" class="btn btn-secondary">Back to Home</a>
             </div>
         </div>
+
         <div class="reviews-section">
             <h3>Customer Reviews</h3>
             @if (ViewBag.Reviews != null && ViewBag.Reviews.Count > 0)
@@ -41,9 +46,18 @@
                 <p>No reviews yet. Be the first to review!</p>
             }
         </div>
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#reviewModal">
-            Leave a Review
-        </button>
+
+        @if (isUserLoggedIn)
+        {
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#reviewModal">
+                Leave a Review
+            </button>
+        }
+        else
+        {
+            <p class="text-muted">Please log in to leave a review.</p>
+        }
+
         <div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -67,9 +81,9 @@
                                 <label for="comment" class="form-label">Comment*</label>
                                 <textarea id="comment" class="form-control" required></textarea>
                             </div>
-                            <div class="mb-4">
+                            <div class="mb-3">
                                 <label for="email" class="form-label">Email*</label>
-                                <input type="text" id="email" class="form-control" required></input>
+                                <input type="email" id="email" class="form-control" value="@userEmail" readonly />
                             </div>
                             <button type="button" class="btn btn-primary" onclick="submitReview()">Submit
                                 Review</button>
@@ -88,7 +102,6 @@
         const comment = document.getElementById('comment').value;
         const email = document.getElementById('email').value;
 
-        // Kiểm tra các trường bắt buộc
         if (!rating || !comment || !email) {
             alert("Please fill out all required fields: Rating, Comment, and Email.");
             return;
@@ -98,7 +111,7 @@
             carId: carId,
             rating: parseInt(rating),
             comment: comment,
-            userEmail: email // Replace this with actual user input if needed
+            userEmail: email // Sử dụng email từ trường readonly
         };
 
         try {
@@ -120,7 +133,5 @@
             console.error("Error submitting review:", error);
             alert("An error occurred while submitting the review.");
         }
-
-    @* location.reload(); *@
     }
 </script>

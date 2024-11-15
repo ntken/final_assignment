@@ -11,17 +11,18 @@ builder.Services.AddHttpClient("CarStoreClient", client =>
 });
 builder.Services.AddTransient<CarService>();
 builder.Services.AddTransient<UserService>();
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 builder.Services.AddHttpClient<CarService>();
 
-// builder.Services.AddHttpClient<CategoryService>()
-//     .ConfigurePrimaryHttpMessageHandler(() =>
-//     {
-//         return new HttpClientHandler
-//         {
-//             ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
-//         };
-//     });
+// Bật Session
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Thời gian hết hạn session
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 var app = builder.Build();
 
@@ -37,6 +38,9 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.MapDefaultControllerRoute();
+
+// Thêm Session vào pipeline
+app.UseSession();
 
 app.UseRouting();
 
