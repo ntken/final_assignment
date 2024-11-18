@@ -17,9 +17,6 @@ CarStoreUI/obj/
 CarShop.Shared/bin
 CarShop.Shared/obj
 
-# Ignore migrations if not needed
-CarStore/Data/Migrations/
-
 # Ignore temporary files
 *.tmp
 *.log
