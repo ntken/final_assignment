@@ -40,44 +40,68 @@ namespace CarStoreUI.Services
 
         public async Task<string> LoginUserAsync(LoginUserDto user)
         {
-            var response = await _httpClient.PostAsJsonAsync("http://localhost:5237/users/login", user);
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                // Deserialize response để lấy token
-                var responseContent = await response.Content.ReadAsStringAsync();
-                var jsonDocument = JsonDocument.Parse(responseContent);
+                // Gửi request đến API
+                var response = await _httpClient.PostAsJsonAsync("http://localhost:5237/users/login", user);
 
-                if (jsonDocument.RootElement.TryGetProperty("token", out var tokenElement))
+                // Kiểm tra phản hồi HTTP
+                if (response.IsSuccessStatusCode)
                 {
-                    string? token = tokenElement.GetString();
-                    // **LOG token trước khi lưu vào Session**
-                    Console.WriteLine($"Token received from API: {token}");
+                    // Đọc nội dung JSON từ phản hồi
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine($"Response Content: {responseContent}");
 
-                    if (!string.IsNullOrEmpty(token))
+                    try
                     {
-                        // Lưu token vào Session nếu không phải null
-                        _httpContextAccessor.HttpContext?.Session.SetString("JwtToken", token);
-                        return "Login successful.";
+                        // Phân tích JSON để lấy token
+                        var jsonDocument = JsonDocument.Parse(responseContent);
+                        if (jsonDocument.RootElement.TryGetProperty("token", out var tokenElement))
+                        {
+                            string? token = tokenElement.GetString();
+                            Console.WriteLine($"Token received: {token}");
+
+                            if (!string.IsNullOrEmpty(token))
+                            {
+                                // Lưu token vào session
+                                _httpContextAccessor.HttpContext?.Session.SetString("JwtToken", token);
+                                return "Login successful.";
+                            }
+                            else
+                            {
+                                return "Token is empty or null.";
+                            }
+                        }
+                        else
+                        {
+                            return "Token not found in response.";
+                        }
                     }
-                    else
+                    catch (JsonException ex)
                     {
-                        return "Token value is null or empty.";
+                        Console.WriteLine($"JSON Parsing Error: {ex.Message}");
+                        return "Failed to parse JSON response.";
                     }
+                }
+                else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    return "Invalid email or password.";
                 }
                 else
                 {
-                    return "Token not found in response.";
+                    var errorMessage = await response.Content.ReadAsStringAsync();
+                    return !string.IsNullOrWhiteSpace(errorMessage) ? errorMessage : "An unexpected error occurred.";
                 }
             }
-            else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            catch (HttpRequestException ex)
             {
-                return "Invalid email or password.";
+                Console.WriteLine($"HTTP Request Error: {ex.Message}");
+                return "Unable to reach the server.";
             }
-            else
+            catch (Exception ex)
             {
-                var errorMessage = await response.Content.ReadAsStringAsync();
-                return !string.IsNullOrWhiteSpace(errorMessage) ? errorMessage : "An error occurred during login.";
+                Console.WriteLine($"Unexpected Error: {ex.Message}");
+                return "An unexpected error occurred.";
             }
         }
     }

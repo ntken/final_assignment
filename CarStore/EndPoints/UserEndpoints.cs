@@ -13,6 +13,7 @@ namespace CarStore.EndPoints;
 
 public static class UserEndpoints
 {
+    private static readonly List<string> TokenBlacklist = new();
     private static string GenerateJwtToken(User user, string key, string issuer)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
@@ -91,6 +92,28 @@ public static class UserEndpoints
             var token = GenerateJwtToken(user, jwtKey, jwtIssuer);
 
             return Results.Ok(new { token });
+        });
+
+        // POST /users/logout
+        group.MapPost("/logout", async (HttpContext context) =>
+        {
+            // Lưu token vào danh sách thu hồi (Blacklist)
+            if (!context.Request.Headers.TryGetValue("Authorization", out var authHeader))
+            {
+                return Results.BadRequest("Authorization header is missing.");
+            }
+
+            var token = authHeader.ToString().Replace("Bearer ", "");
+            if (string.IsNullOrEmpty(token))
+            {
+                return Results.BadRequest("Token is missing.");
+            }
+
+            // Lưu token vào danh sách thu hồi
+            TokenBlacklist.Add(token);
+
+            await Task.CompletedTask; // Thêm lệnh này để loại bỏ cảnh báo
+            return Results.Ok(new { message = "Logged out successfully" });
         });
 
         // GET /users

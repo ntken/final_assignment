@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using CarShop.Shared.Models;
 using CarStoreUI.Services;
 using System.Threading.Tasks;
+using System.Text.Json;
 
 namespace CarStoreUI.Controllers
 {
@@ -64,32 +65,46 @@ namespace CarStoreUI.Controllers
         {
             if (ModelState.IsValid)
             {
+                // Gọi UserService để xử lý login
                 var result = await _userService.LoginUserAsync(model);
+
                 if (result == "Login successful.")
                 {
-                    // Lưu trạng thái đăng nhập vào Session
-                    HttpContext.Session.SetString("IsLoggedIn", "true");
-                    HttpContext.Session.SetString("UserEmail", model.Email); // Lưu email của người dùng vào Session
-
-                    // Đăng nhập thành công, chuyển hướng với query parameter "login=success"
-                    return RedirectToAction("Login", new { login = "success" });
+                    // Chuyển hướng về trang chủ nếu login thành công
+                    return RedirectToAction("Index", "Home");
                 }
                 else
                 {
-                    // Đăng nhập thất bại, chuyển hướng với query parameter "login=failed"
-                    return RedirectToAction("Login", new { login = "failed" });
+                    // Thêm lỗi vào ModelState để hiển thị trên giao diện
+                    ModelState.AddModelError(string.Empty, result);
                 }
             }
             return View(model);
         }
 
         [HttpGet]
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout()
         {
+            var token = HttpContext.Session.GetString("JwtToken");
+
+            // Gọi API /logout
+            using (var client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+                var response = await client.PostAsync("http://localhost:5237/users/logout", null);
+                if (!response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("Index", "Home", new { logout = "failed" });
+                }
+            }
+
+            // Xóa token và trạng thái Session
+            HttpContext.Session.Remove("JwtToken");
+            HttpContext.Session.Remove("UserEmail");
             HttpContext.Session.Remove("IsLoggedIn");
-            HttpContext.Session.Remove("UserEmail"); // Xóa UserEmail khỏi Session
+
             return RedirectToAction("Index", "Home");
         }
-
     }
 }

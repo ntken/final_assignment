@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
+using System.Collections.Concurrent;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +25,7 @@ builder.Services.AddCors(options =>
 // Đảm bảo đọc JwtKey và JwtIssuer từ appsettings.json
 var jwtKey = builder.Configuration["Jwt:Key"];
 var jwtIssuer = builder.Configuration["Jwt:Issuer"];
+var TokenBlacklist = new ConcurrentBag<string>();
 Console.WriteLine($"JWT Issuer: {builder.Configuration["Jwt:Issuer"]}");
 Console.WriteLine($"JWT Key: {builder.Configuration["Jwt:Key"]}");
 
@@ -49,9 +51,17 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             ValidIssuer = builder.Configuration["Jwt:Issuer"], // "http://localhost:5237"
             ValidAudience = builder.Configuration["Jwt:Issuer"], // "http://localhost:5237"
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"])), // Secret key
-            ValidAudiences = new List<string>(){
-                builder.Configuration["Jwt:Issuer"]
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtKey)), // Secret key
+            ValidAudiences = new List<string>() { jwtIssuer },
+            ValidateTokenReplay = true, // Kích hoạt kiểm tra token bị thu hồi
+            TokenReplayValidator = (expirationTime, securityToken, validationParameters) =>
+            {
+                if (TokenBlacklist.Contains(securityToken))
+                {
+                    Console.WriteLine($"Token is revoke: {securityToken}");
+                    return false;
+                }
+                return true;
             }
         };
         options.RequireHttpsMetadata = false;
@@ -65,7 +75,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             },
             OnTokenValidated = context =>
             {
-                Console.WriteLine($"Token validated for {context.Principal.Identity?.Name}");
+                var identityName = context.Principal?.Identity?.Name;
+                if (!string.IsNullOrEmpty(identityName))
+                {
+                    Console.WriteLine($"Token validated for {identityName}");
+                }
+                else
+                {
+                    Console.WriteLine("Token validated, but no identity name found.");
+                }
                 return Task.CompletedTask;
             }
         };
