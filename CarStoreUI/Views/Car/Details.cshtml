@@ -102,6 +102,9 @@
         const comment = document.getElementById('comment').value;
         const email = document.getElementById('email').value;
 
+        // Lấy token từ session (hoặc lưu trữ khác nếu cần)
+        const token = '@HttpContextAccessor.HttpContext?.Session.GetString("JwtToken")';
+
         if (!rating || !comment || !email) {
             alert("Please fill out all required fields: Rating, Comment, and Email.");
             return;
@@ -118,7 +121,8 @@
             const response = await fetch('http://localhost:5237/reviews/', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` // Gửi token ở đây
                 },
                 body: JSON.stringify(review)
             });

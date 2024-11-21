@@ -1,19 +1,32 @@
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using System.Net.Http.Headers;
 using CarShop.Shared.Models;
 
 public class CarService
 {
     private readonly HttpClient _httpClient;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public CarService(HttpClient httpClient)
+    private void AddAuthorizationHeader()
+    {
+        var token = _httpContextAccessor.HttpContext?.Session.GetString("JwtToken");
+        if (!string.IsNullOrEmpty(token))
+        {
+            Console.WriteLine($"Using token: {token}");
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        }
+    }
+    public CarService(HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
     {
         _httpClient = httpClient;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public async Task<List<CarDto>> GetCarsAsync()
     {
+        AddAuthorizationHeader();
         // Step 1: Fetch the list of cars from the API endpoint
         var response = await _httpClient.GetAsync("http://localhost:5237/cars");
         response.EnsureSuccessStatusCode();
@@ -37,6 +50,7 @@ public class CarService
 
     public async Task<CarDto?> GetCarByIdAsync(int id)
     {
+        AddAuthorizationHeader();
         var response = await _httpClient.GetAsync($"http://localhost:5237/cars/{id}");
         if (response.IsSuccessStatusCode)
         {
@@ -63,21 +77,25 @@ public class CarService
 
     public async Task CreateCarAsync(CarDto car)
     {
+        AddAuthorizationHeader();
         await _httpClient.PostAsJsonAsync("http://localhost:5237/cars", car);
     }
 
     public async Task UpdateCarAsync(int id, CarDto car)
     {
+        AddAuthorizationHeader();
         await _httpClient.PutAsJsonAsync($"http://localhost:5237/cars/{id}", car);
     }
 
     public async Task DeleteCarAsync(int id)
     {
+        AddAuthorizationHeader();
         await _httpClient.DeleteAsync($"http://localhost:5237/cars/{id}");
     }
 
     public async Task<List<CarDto>> GetCarsByFilterAsync(string filterType, string filterValue)
     {
+        AddAuthorizationHeader();
         // Construct the URL based on the filter type and value
         string url = $"http://localhost:5237/cars?{filterType}={filterValue}";
 
@@ -104,6 +122,7 @@ public class CarService
 
     public async Task<List<CompanyDto>> GetCompaniesAsync()
     {
+        AddAuthorizationHeader();
         var response = await _httpClient.GetAsync("http://localhost:5237/companies");
         response.EnsureSuccessStatusCode();
 
@@ -112,6 +131,7 @@ public class CarService
 
     public async Task<List<ModelDto>> GetModelsAsync()
     {
+        AddAuthorizationHeader();
         var response = await _httpClient.GetAsync("http://localhost:5237/models");
         response.EnsureSuccessStatusCode();
 
@@ -120,6 +140,7 @@ public class CarService
 
     public async Task<List<ColorDto>> GetColorsAsync()
     {
+        AddAuthorizationHeader();
         var response = await _httpClient.GetAsync("http://localhost:5237/colors");
         response.EnsureSuccessStatusCode();
 
@@ -128,6 +149,7 @@ public class CarService
 
     public async Task<List<ReviewDto>> GetReviewsAsync(int carId)
     {
+        AddAuthorizationHeader();
         var response = await _httpClient.GetAsync($"http://localhost:5237/reviews/{carId}");
         response.EnsureSuccessStatusCode();
         return await response.Content.ReadFromJsonAsync<List<ReviewDto>>() ?? new List<ReviewDto>();
@@ -135,11 +157,13 @@ public class CarService
 
     public async Task AddReviewAsync(ReviewDto reviewDto)
     {
+        AddAuthorizationHeader();
         await _httpClient.PostAsJsonAsync("http://localhost:5237/reviews", reviewDto);
     }
 
     public async Task<double?> GetAverageRatingAsync(int carId)
     {
+        AddAuthorizationHeader();
         var response = await _httpClient.GetAsync($"http://localhost:5237/reviews/average-rating/{carId}");
         response.EnsureSuccessStatusCode();
 

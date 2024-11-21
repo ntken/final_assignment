@@ -1,1 +1,23 @@
 GET http://localhost:5237/models
+
+###
+GET http://localhost:5237/models/1
+
+###
+POST http://localhost:5237/models
+Content-Type: application/json
+
+{
+    "name": "Atomic"
+}
+
+###
+PUT http://localhost:5237/models/6
+Content-Type: application/json
+
+{
+    "name": "Update Atomic"
+}
+
+###
+DELETE http://localhost:5237/models/6

@@ -1,1 +1,23 @@
 GET http://localhost:5237/companies
+
+###
+GET http://localhost:5237/companies/5
+
+###
+POST http://localhost:5237/companies
+Content-Type: application/json
+
+{
+    "name": "Tesla"
+}
+
+###
+PUT http://localhost:5237/companies/6
+Content-Type: application/json
+
+{
+    "name": "Tesla"
+}
+
+###
+DELETE http://localhost:5237/companies/6

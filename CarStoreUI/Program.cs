@@ -11,9 +11,10 @@ builder.Services.AddHttpClient("CarStoreClient", client =>
 });
 builder.Services.AddTransient<CarService>();
 builder.Services.AddTransient<UserService>();
-builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 builder.Services.AddHttpClient<CarService>();
+builder.Services.AddHttpClient<UserService>();
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 // Bật Session
 builder.Services.AddDistributedMemoryCache();

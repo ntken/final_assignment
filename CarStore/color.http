@@ -1,1 +1,23 @@
 GET http://localhost:5237/colors
+
+###
+GET http://localhost:5237/colors/5
+
+###
+POST http://localhost:5237/colors
+Content-Type: application/json
+
+{
+    "name": "Blue"
+}
+
+###
+PUT http://localhost:5237/colors/7
+Content-Type: application/json
+
+{
+    "name": "Sky Blue"
+}
+
+###
+DELETE http://localhost:5237/colors/6

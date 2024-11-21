@@ -2,16 +2,19 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using CarShop.Shared.Models;
+using System.Text.Json;
 
 namespace CarStoreUI.Services
 {
     public class UserService
     {
         private readonly HttpClient _httpClient;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UserService(HttpClient httpClient)
+        public UserService(HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
         {
             _httpClient = httpClient;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<string> RegisterUserAsync(RegisterUserDto user)
@@ -41,7 +44,31 @@ namespace CarStoreUI.Services
 
             if (response.IsSuccessStatusCode)
             {
-                return "Login successful.";
+                // Deserialize response để lấy token
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var jsonDocument = JsonDocument.Parse(responseContent);
+
+                if (jsonDocument.RootElement.TryGetProperty("token", out var tokenElement))
+                {
+                    string? token = tokenElement.GetString();
+                    // **LOG token trước khi lưu vào Session**
+                    Console.WriteLine($"Token received from API: {token}");
+
+                    if (!string.IsNullOrEmpty(token))
+                    {
+                        // Lưu token vào Session nếu không phải null
+                        _httpContextAccessor.HttpContext?.Session.SetString("JwtToken", token);
+                        return "Login successful.";
+                    }
+                    else
+                    {
+                        return "Token value is null or empty.";
+                    }
+                }
+                else
+                {
+                    return "Token not found in response.";
+                }
             }
             else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {
@@ -53,6 +80,5 @@ namespace CarStoreUI.Services
                 return !string.IsNullOrWhiteSpace(errorMessage) ? errorMessage : "An error occurred during login.";
             }
         }
-
     }
 }

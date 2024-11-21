@@ -2,13 +2,40 @@ using CarStore.Data;
 using CarStore.Entities;
 using CarShop.Shared.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Cryptography;
 
 namespace CarStore.EndPoints;
 
 public static class UserEndpoints
 {
+    private static string GenerateJwtToken(User user, string key, string issuer)
+    {
+        var tokenHandler = new JwtSecurityTokenHandler();
+
+        var now = DateTime.UtcNow;
+        var signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key));
+
+        var claims = new List<Claim>() {
+                new Claim(ClaimTypes.Name, user.Id.ToString()),
+                new Claim("Email", user.Email),
+            };
+
+        var jwt = new JwtSecurityToken(
+            issuer: issuer,
+            audience: issuer,
+            claims: claims,
+            notBefore: now,
+            expires: now.Add(TimeSpan.FromMinutes(60)),
+            signingCredentials: new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256)
+        );
+
+        return new JwtSecurityTokenHandler().WriteToken(jwt);
+    }
     public static RouteGroupBuilder MapUserEndpoints(this WebApplication app)
     {
         var group = app.MapGroup("users");
@@ -16,19 +43,15 @@ public static class UserEndpoints
         // POST /users/register
         group.MapPost("/register", async (RegisterUserDto registerDto, CarStoreContext dbContext) =>
         {
-            // Kiểm tra nếu email đã tồn tại
-            var existingUser = await dbContext.Users
-                .FirstOrDefaultAsync(u => u.Email == registerDto.Email);
+            var existingUser = await dbContext.Users.FirstOrDefaultAsync(u => u.Email == registerDto.Email);
             if (existingUser != null)
             {
                 return Results.Conflict("Email already registered.");
             }
 
-            // Mã hóa mật khẩu
             using var sha256 = SHA256.Create();
             var passwordHash = Convert.ToBase64String(sha256.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password)));
 
-            // Tạo người dùng mới
             var user = new User
             {
                 Email = registerDto.Email,
@@ -43,27 +66,55 @@ public static class UserEndpoints
         });
 
         // POST /users/login
-        group.MapPost("/login", async (LoginUserDto loginDto, CarStoreContext dbContext) =>
+        group.MapPost("/login", async (LoginUserDto loginDto, CarStoreContext dbContext, IConfiguration configuration) =>
         {
-            // Kiểm tra xem người dùng có tồn tại không
-            var user = await dbContext.Users
-                .FirstOrDefaultAsync(u => u.Email == loginDto.Email);
-
+            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Email == loginDto.Email);
             if (user == null)
             {
-                return Results.Json(new { message = "Invalid email or password." }, statusCode: 401);
+                return Results.Json(new { message = "Invalid credentials." }, statusCode: 401);
             }
 
-            // Xác minh mật khẩu
             using var sha256 = SHA256.Create();
             var passwordHash = Convert.ToBase64String(sha256.ComputeHash(Encoding.UTF8.GetBytes(loginDto.Password)));
 
             if (user.PasswordHash != passwordHash)
             {
-                return Results.Json(new { message = "Invalid email or password." }, statusCode: 401);
+                return Results.Json(new { message = "Invalid credentials." }, statusCode: 401);
             }
 
-            return Results.Ok("Login successful.");
+            var jwtKey = configuration["Jwt:Key"];
+            var jwtIssuer = configuration["Jwt:Issuer"];
+            if (string.IsNullOrEmpty(jwtKey) || string.IsNullOrEmpty(jwtIssuer))
+            {
+                throw new InvalidOperationException("JWT settings are not configured.");
+            }
+            var token = GenerateJwtToken(user, jwtKey, jwtIssuer);
+
+            return Results.Ok(new { token });
+        });
+
+        // GET /users
+        group.MapGet("/", [Authorize] async (CarStoreContext dbContext) =>
+        {
+            var users = await dbContext.Users
+                .Select(u => new { u.Id, u.Email, u.FullName })
+                .ToListAsync();
+            return Results.Ok(users);
+        });
+
+        // DELETE /users/{id}
+        group.MapDelete("/{id}", [Authorize] async (int id, CarStoreContext dbContext) =>
+        {
+            var user = await dbContext.Users.FindAsync(id);
+            if (user == null)
+            {
+                return Results.NotFound($"User with ID {id} not found.");
+            }
+
+            dbContext.Users.Remove(user);
+            await dbContext.SaveChangesAsync();
+
+            return Results.NoContent();
         });
 
         return group;
