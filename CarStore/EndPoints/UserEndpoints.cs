@@ -8,6 +8,8 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Cryptography;
+using CarStore.Utils;
+using CarStore.Services;
 
 namespace CarStore.EndPoints;
 
@@ -24,6 +26,7 @@ public static class UserEndpoints
         var claims = new List<Claim>() {
                 new Claim(ClaimTypes.Name, user.Id.ToString()),
                 new Claim("Email", user.Email),
+                new Claim("Role", user.Role),
             };
 
         var jwt = new JwtSecurityToken(
@@ -34,6 +37,7 @@ public static class UserEndpoints
             expires: now.Add(TimeSpan.FromMinutes(60)),
             signingCredentials: new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256)
         );
+        Console.WriteLine($"GenerateJwtToken: Issuer = {issuer}");
 
         return new JwtSecurityTokenHandler().WriteToken(jwt);
     }
@@ -95,7 +99,7 @@ public static class UserEndpoints
         });
 
         // POST /users/logout
-        group.MapPost("/logout", async (HttpContext context) =>
+        group.MapPost("/logout", async (HttpContext context, TokenBlacklistService tokenBlacklistService) =>
         {
             // Lưu token vào danh sách thu hồi (Blacklist)
             if (!context.Request.Headers.TryGetValue("Authorization", out var authHeader))
@@ -110,15 +114,19 @@ public static class UserEndpoints
             }
 
             // Lưu token vào danh sách thu hồi
-            TokenBlacklist.Add(token);
+            tokenBlacklistService.AddToken(token);
 
             await Task.CompletedTask; // Thêm lệnh này để loại bỏ cảnh báo
             return Results.Ok(new { message = "Logged out successfully" });
         });
 
         // GET /users
-        group.MapGet("/", [Authorize] async (CarStoreContext dbContext) =>
+        group.MapGet("/", [Authorize] async (HttpContext httpContext, CarStoreContext dbContext) =>
         {
+            if (!AuthorizationUtils.IsAdmin(httpContext))
+            {
+                return Results.Forbid();
+            }
             var users = await dbContext.Users
                 .Select(u => new { u.Id, u.Email, u.FullName })
                 .ToListAsync();
@@ -126,8 +134,12 @@ public static class UserEndpoints
         });
 
         // DELETE /users/{id}
-        group.MapDelete("/{id}", [Authorize] async (int id, CarStoreContext dbContext) =>
+        group.MapDelete("/{id}", [Authorize] async (HttpContext httpContext, int id, CarStoreContext dbContext) =>
         {
+            if (!AuthorizationUtils.IsAdmin(httpContext))
+            {
+                return Results.Forbid();
+            }
             var user = await dbContext.Users.FindAsync(id);
             if (user == null)
             {
@@ -138,6 +150,18 @@ public static class UserEndpoints
             await dbContext.SaveChangesAsync();
 
             return Results.NoContent();
+        });
+
+        group.MapGet("/admin/users", [Authorize] async (HttpContext httpContext, CarStoreContext dbContext) =>
+        {
+            if (!AuthorizationUtils.IsAdmin(httpContext))
+            {
+                return Results.Forbid();
+            }
+            var users = await dbContext.Users
+                .Select(u => new { u.Id, u.Email, u.FullName, u.Role })
+                .ToListAsync();
+            return Results.Ok(users);
         });
 
         return group;

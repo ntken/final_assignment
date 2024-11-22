@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using System.Collections.Concurrent;
+using CarStore.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,28 +38,30 @@ JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Remove("sub");
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        options.ClaimsIssuer = builder.Configuration["Jwt:Issuer"];
-        options.Audience = builder.Configuration["Jwt:Issuer"];
-        options.Authority = builder.Configuration["Jwt:Issuer"];
+        options.ClaimsIssuer = jwtIssuer;
+        options.Audience = jwtIssuer;
+        options.Authority = jwtIssuer;
         options.UseSecurityTokenValidators = true;
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateLifetime = false,
             ClockSkew = TimeSpan.Zero,
             RequireExpirationTime = false,
-            ValidateIssuer = true,
+            ValidateIssuer = false,
+            ValidIssuer = jwtIssuer, // "localhost"
             ValidateAudience = false,
+            ValidAudience = jwtIssuer, // "localhost"
             ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"], // "http://localhost:5237"
-            ValidAudience = builder.Configuration["Jwt:Issuer"], // "http://localhost:5237"
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtKey)), // Secret key
             ValidAudiences = new List<string>() { jwtIssuer },
             ValidateTokenReplay = true, // Kích hoạt kiểm tra token bị thu hồi
             TokenReplayValidator = (expirationTime, securityToken, validationParameters) =>
             {
-                if (TokenBlacklist.Contains(securityToken))
+                // Lấy token từ securityToken
+                var token = securityToken as string;
+                if (token != null && TokenBlacklist.Contains(token))
                 {
-                    Console.WriteLine($"Token is revoke: {securityToken}");
+                    Console.WriteLine($"Token is revoked: {token}");
                     return false;
                 }
                 return true;
@@ -90,6 +93,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddAuthorization();
+builder.Services.AddSingleton<TokenBlacklistService>();
 
 var app = builder.Build();
 

@@ -5,6 +5,7 @@ using CarStore.Mapping;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using CarStore.Services;
 
 namespace CarStore.EndPoints
 {
@@ -25,24 +26,23 @@ namespace CarStore.EndPoints
             });
 
             // POST: Add a new review
-            group.MapPost("/", [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)] async (HttpContext context, ReviewDto reviewDto, CarStoreContext dbContext) =>
-{
-    if (context.Request.Headers.TryGetValue("Authorization", out var authHeader))
-    {
-        Console.WriteLine($"Authorization Header: {authHeader}");
-    }
-    else
-    {
-        Console.WriteLine("Authorization header not found.");
-    }
+            group.MapPost("/", [Authorize] async (HttpContext context, ReviewDto reviewDto, CarStoreContext dbContext, TokenBlacklistService tokenBlacklistService) =>
+            {
+                if (context.Request.Headers.TryGetValue("Authorization", out var authHeader))
+                {
+                    var token = authHeader.ToString().Replace("Bearer ", "");
+                    if (tokenBlacklistService.IsTokenBlacklisted(token))
+                    {
+                        return Results.Unauthorized(); // Token đã bị thu hồi
+                    }
+                }
+                var review = reviewDto.ToEntity();
+                review.ReviewDate = DateTime.Now;
+                dbContext.Reviews.Add(review);
+                await dbContext.SaveChangesAsync();
 
-    var review = reviewDto.ToEntity();
-    review.ReviewDate = DateTime.Now;
-    dbContext.Reviews.Add(review);
-    await dbContext.SaveChangesAsync();
-
-    return Results.Created($"/reviews/{review.Id}", review.ToDto());
-});
+                return Results.Created($"/reviews/{review.Id}", review.ToDto());
+            });
 
             group.MapGet("/average-rating/{carId}", async (int carId, CarStoreContext dbContext) =>
 {

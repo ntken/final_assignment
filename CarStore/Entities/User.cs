@@ -15,5 +15,6 @@ namespace CarStore.Entities
         
         [Required]
         public string FullName { get; set; } = string.Empty;
+        public string Role { get; set; } = "User"; // Mặc định là "User"
     }
 }
