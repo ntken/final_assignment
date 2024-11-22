@@ -1,9 +1,15 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
+import ConfirmPopup from "../components/ConfirmPopup";
+import "../styles.css";
 
 const ManageModels = () => {
   const [models, setModels] = useState([]);
-  const [newModel, setNewModel] = useState("");
+  const [editingId, setEditingId] = useState(null);
+  const [newModelName, setNewModelName] = useState("");
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [selectedModelId, setSelectedModelId] = useState(null);
 
   useEffect(() => {
     fetchModels();
@@ -11,51 +17,126 @@ const ManageModels = () => {
 
   const fetchModels = async () => {
     const token = localStorage.getItem("token");
-    const response = await axios.get("http://localhost:5237/models", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    setModels(response.data);
+    try {
+      const response = await axios.get("http://localhost:5237/models", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setModels(response.data);
+    } catch (error) {
+      console.error("Error fetching models:", error);
+    }
   };
 
   const handleAddModel = async () => {
     const token = localStorage.getItem("token");
-    await axios.post(
-      "http://localhost:5237/models",
-      { name: newModel },
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-    setNewModel("");
-    fetchModels();
+    try {
+      await axios.post(
+        "http://localhost:5237/models",
+        { name: newModel },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setNewModel("");
+      fetchModels();
+    } catch (error) {
+      console.error("Error adding model:", error);
+    }
   };
 
-  const handleDeleteModel = async (id) => {
+  const handleDeleteClick = (modelId) => {
+    setSelectedModelId(modelId);
+    setIsPopupOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
     const token = localStorage.getItem("token");
-    await axios.delete(`http://localhost:5237/models/${id}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    fetchModels();
+    try {
+      await axios.delete(`http://localhost:5237/models/${selectedModelId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      fetchModels();
+    } catch (error) {
+      console.error("Error deleting model:", error);
+    }
+    setIsPopupOpen(false);
+  };
+
+  const handleCancelDelete = () => {
+    setIsPopupOpen(false);
+    setSelectedModelId(null);
+  };
+
+  const handleEditClick = (id, currentName) => {
+    setEditingId(id);
+    setNewModelName(currentName);
+  };
+
+  const handleSaveClick = async (id) => {
+    const token = localStorage.getItem("token");
+    try {
+      await axios.put(
+        `http://localhost:5237/models/${id}`,
+        { name: newModelName },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setEditingId(null);
+      fetchModels();
+    } catch (error) {
+      console.error("Error updating model:", error);
+    }
   };
 
   return (
     <div>
-      <h2>Manage Models</h2>
       <div>
-        <input
-          type="text"
-          value={newModel}
-          onChange={(e) => setNewModel(e.target.value)}
-          placeholder="New Model"
-        />
-        <button onClick={handleAddModel}>Add Model</button>
+        <Link to="/" className="back-to-dashboard">
+          ← Back to Dashboard
+        </Link>
       </div>
-      <ul>
-        {models.map((model) => (
-          <li key={model.id}>
-            {model.name}{" "}
-            <button onClick={() => handleDeleteModel(model.id)}>Delete</button>
-          </li>
-        ))}
-      </ul>
+      <h2>Manage Models</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {models.map((model) => (
+            <tr key={model.id}>
+              <td>{model.id}</td>
+              <td>
+                {editingId === model.id ? (
+                  <input
+                    type="text"
+                    value={newModelName}
+                    onChange={(e) => setNewModelName(e.target.value)}
+                  />
+                ) : (
+                  model.name
+                )}
+              </td>
+              <td>
+                {editingId === model.id ? (
+                  <button onClick={() => handleSaveClick(model.id)}>Save</button>
+                ) : (
+                  <button onClick={() => handleEditClick(model.id, model.name)}>
+                    Edit
+                  </button>
+                )}
+                <button onClick={() => handleDeleteClick(model.id)}>Delete</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      {isPopupOpen && (
+        <ConfirmPopup
+          message="Are you sure you want to delete this model?"
+          onConfirm={handleConfirmDelete}
+          onCancel={handleCancelDelete}
+        />
+      )}
     </div>
   );
 };

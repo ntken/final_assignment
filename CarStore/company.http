@@ -20,4 +20,4 @@ Content-Type: application/json
 }
 
 ###
-DELETE http://localhost:5237/companies/6
+DELETE http://localhost:5237/companies/7

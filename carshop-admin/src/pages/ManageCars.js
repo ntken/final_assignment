@@ -1,8 +1,13 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
+import ConfirmPopup from "../components/ConfirmPopup";
+import "../styles.css";
 
 const ManageCars = () => {
   const [cars, setCars] = useState([]);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [selectedCarId, setSelectedCarId] = useState(null);
 
   useEffect(() => {
     const fetchCars = async () => {
@@ -20,10 +25,39 @@ const ManageCars = () => {
     fetchCars();
   }, []);
 
+  const handleDeleteClick = (carId) => {
+    setSelectedCarId(carId);
+    setIsPopupOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    const token = localStorage.getItem("token");
+    try {
+      await axios.delete(`http://localhost:5237/cars/${selectedCarId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      // Cập nhật danh sách cars sau khi xóa
+      setCars((prevCars) => prevCars.filter((car) => car.id !== selectedCarId));
+    } catch (error) {
+      console.error("Error deleting car:", error);
+    }
+    setIsPopupOpen(false); // Đóng pop-up sau khi xóa
+  };
+
+  const handleCancelDelete = () => {
+    setIsPopupOpen(false);
+    setSelectedCarId(null);
+  };
+
   return (
     <div>
+      <div>
+        <Link to="/" className="back-to-dashboard">
+          ← Back to Dashboard
+        </Link>
+      </div>
       <h2>Manage Cars</h2>
-      <table border="1" cellPadding="10" style={{ width: "100%", textAlign: "left" }}>
+      <table>
         <thead>
           <tr>
             <th>ID</th>
@@ -59,12 +93,19 @@ const ManageCars = () => {
               <td>{car.description}</td>
               <td>
                 <button onClick={() => alert(`Edit car ${car.company} ${car.model}`)}>Edit</button>
-                <button onClick={() => alert(`Delete car ${car.company} ${car.model}`)}>Delete</button>
+                <button onClick={() => handleDeleteClick(car.id)}>Delete</button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+      {isPopupOpen && (
+        <ConfirmPopup
+          message="Are you sure you want to delete this item?"
+          onConfirm={handleConfirmDelete}
+          onCancel={handleCancelDelete}
+        />
+      )}
     </div>
   );
 };

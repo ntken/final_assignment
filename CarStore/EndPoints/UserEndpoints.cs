@@ -121,25 +121,25 @@ public static class UserEndpoints
         });
 
         // GET /users
-        group.MapGet("/", [Authorize] async (HttpContext httpContext, CarStoreContext dbContext) =>
+        group.MapGet("/", async (HttpContext httpContext, CarStoreContext dbContext) =>
         {
-            if (!AuthorizationUtils.IsAdmin(httpContext))
-            {
-                return Results.Forbid();
-            }
+            // if (!AuthorizationUtils.IsAdmin(httpContext))
+            // {
+            //     return Results.Forbid();
+            // }
             var users = await dbContext.Users
-                .Select(u => new { u.Id, u.Email, u.FullName })
+                .Select(u => new { u.Id, u.Email, u.FullName, u.Role })
                 .ToListAsync();
             return Results.Ok(users);
         });
 
         // DELETE /users/{id}
-        group.MapDelete("/{id}", [Authorize] async (HttpContext httpContext, int id, CarStoreContext dbContext) =>
+        group.MapDelete("/{id}", async (HttpContext httpContext, int id, CarStoreContext dbContext) =>
         {
-            if (!AuthorizationUtils.IsAdmin(httpContext))
-            {
-                return Results.Forbid();
-            }
+            // if (!AuthorizationUtils.IsAdmin(httpContext))
+            // {
+            //     return Results.Forbid();
+            // }
             var user = await dbContext.Users.FindAsync(id);
             if (user == null)
             {
@@ -150,19 +150,7 @@ public static class UserEndpoints
             await dbContext.SaveChangesAsync();
 
             return Results.NoContent();
-        });
-
-        group.MapGet("/admin/users", [Authorize] async (HttpContext httpContext, CarStoreContext dbContext) =>
-        {
-            if (!AuthorizationUtils.IsAdmin(httpContext))
-            {
-                return Results.Forbid();
-            }
-            var users = await dbContext.Users
-                .Select(u => new { u.Id, u.Email, u.FullName, u.Role })
-                .ToListAsync();
-            return Results.Ok(users);
-        });
+        });        
 
         return group;
     }
