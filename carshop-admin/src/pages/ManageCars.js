@@ -12,6 +12,16 @@ const ManageCars = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [selectedCarId, setSelectedCarId] = useState(null);
   const [editingCar, setEditingCar] = useState(null);
+  const [isAddPopupOpen, setIsAddPopupOpen] = useState(false);
+  const [newCar, setNewCar] = useState({
+    companyId: "",
+    modelId: "",
+    colorId: "",
+    price: "",
+    releasedDate: "",
+    description: "",
+    image: "",
+  });
 
   useEffect(() => {
     fetchCars();
@@ -121,12 +131,45 @@ const ManageCars = () => {
     }
   };
 
+  const handleAddCar = async () => {
+    const token = localStorage.getItem("token");
+    try {
+      await axios.post(
+        "http://localhost:5237/cars",
+        {
+          ...newCar,
+          price: parseFloat(newCar.price),
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setIsAddPopupOpen(false);
+      setNewCar({
+        companyId: "",
+        modelId: "",
+        colorId: "",
+        price: "",
+        releasedDate: "",
+        description: "",
+        image: "",
+      });
+      fetchCars();
+    } catch (error) {
+      console.error("Error adding car:", error);
+    }
+  };
+
   const handleCancelEdit = () => {
     setEditingCar(null); // Hủy bỏ chỉnh sửa
   };
 
-  const handleInputChange = (field, value) => {
-    setEditingCar({ ...editingCar, [field]: value });
+  const handleInputChange = (field, value, isAddMode = false) => {
+    if (isAddMode) {
+      setNewCar({ ...newCar, [field]: value });
+    } else {
+      setEditingCar({ ...editingCar, [field]: value });
+    }
   };
 
   return (
@@ -137,6 +180,13 @@ const ManageCars = () => {
         </Link>
       </div>
       <h2>Manage Cars</h2>
+      <button
+        className="add-btn"
+        onClick={() => setIsAddPopupOpen(true)}
+        style={{ marginBottom: "20px" }}
+      >
+        Add New Car
+      </button>
       {editingCar ? (
         <div className="edit-form">
           <h3>Edit Car</h3>
@@ -256,8 +306,8 @@ const ManageCars = () => {
                 <td>{new Date(car.releasedDate).toLocaleDateString()}</td>
                 <td>{car.description}</td>
                 <td>
-                  <button onClick={() => handleEditClick(car)}>Edit</button>
-                  <button onClick={() => handleDeleteClick(car.id)}>Delete</button>
+                  <button onClick={() => handleEditClick(car)} className="edit-btn">Edit</button>
+                  <button onClick={() => handleDeleteClick(car.id)} className="delete-btn">Delete</button>
                 </td>
               </tr>
             ))}
@@ -270,6 +320,96 @@ const ManageCars = () => {
           onConfirm={handleConfirmDelete}
           onCancel={handleCancelDelete}
         />
+      )}
+      {isAddPopupOpen && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>Add New Car</h3>
+            <div>
+              <label>Company:</label>
+              <select
+                value={newCar.companyId}
+                onChange={(e) => handleInputChange("companyId", e.target.value, true)}
+              >
+                <option value="">Select Company</option>
+                {companies.map((company) => (
+                  <option key={company.id} value={company.id}>
+                    {company.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label>Model:</label>
+              <select
+                value={newCar.modelId}
+                onChange={(e) => handleInputChange("modelId", e.target.value, true)}
+              >
+                <option value="">Select Model</option>
+                {models.map((model) => (
+                  <option key={model.id} value={model.id}>
+                    {model.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label>Color:</label>
+              <select
+                value={newCar.colorId}
+                onChange={(e) => handleInputChange("colorId", e.target.value, true)}
+              >
+                <option value="">Select Color</option>
+                {colors.map((color) => (
+                  <option key={color.id} value={color.id}>
+                    {color.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label>Released Date:</label>
+              <input
+                type="date"
+                value={newCar.releasedDate}
+                onChange={(e) => handleInputChange("releasedDate", e.target.value, true)}
+              />
+            </div>
+            <div>
+              <label>Price:</label>
+              <input
+                type="number"
+                value={newCar.price}
+                onChange={(e) => handleInputChange("price", e.target.value, true)}
+              />
+            </div>
+            <div>
+              <label>Description:</label>
+              <textarea
+                rows="4"
+                value={newCar.description}
+                onChange={(e) => handleInputChange("description", e.target.value, true)}
+              ></textarea>
+            </div>
+            <div>
+              <label>Image URL:</label>
+              <input
+                type="text"
+                value={newCar.image}
+                placeholder="/images/<yourimage.jpg>"
+                onChange={(e) => handleInputChange("image", e.target.value, true)}
+              />
+            </div>
+            <div className="modal-buttons">
+              <button className="btn-cancel" onClick={() => setIsAddPopupOpen(false)}>
+                Cancel
+              </button>
+              <button className="btn-confirm" onClick={handleAddCar}>
+                Submit
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
