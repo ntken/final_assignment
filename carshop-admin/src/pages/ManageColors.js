@@ -10,6 +10,7 @@ const ManageColors = () => {
   const [newColorName, setNewColorName] = useState("");
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [selectedColorId, setSelectedColorId] = useState(null);
+  const [newColor, setNewColor] = useState("");
 
   useEffect(() => {
     fetchColors();
@@ -29,6 +30,10 @@ const ManageColors = () => {
 
   const handleAddColor = async () => {
     const token = localStorage.getItem("token");
+    if (!newColor.trim()) {
+      alert("Color name cannot be empty!");
+      return;
+    }
     try {
       await axios.post(
         "http://localhost:5237/colors",
@@ -93,6 +98,18 @@ const ManageColors = () => {
         </Link>
       </div>
       <h2>Manage Colors</h2>
+      <div style={{ marginBottom: "20px" }}>
+        <input
+          type="text"
+          value={newColor}
+          onChange={(e) => setNewColor(e.target.value)}
+          placeholder="Enter new color name"
+          style={{ padding: "5px", marginRight: "10px" }}
+        />
+        <button onClick={handleAddColor} style={{ padding: "5px 10px" }}>
+          Add Color
+        </button>
+      </div>
       <table>
         <thead>
           <tr>

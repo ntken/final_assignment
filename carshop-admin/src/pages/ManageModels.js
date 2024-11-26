@@ -10,6 +10,7 @@ const ManageModels = () => {
   const [newModelName, setNewModelName] = useState("");
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [selectedModelId, setSelectedModelId] = useState(null);
+  const [newModel, setNewModel] = useState("");
 
   useEffect(() => {
     fetchModels();
@@ -29,6 +30,10 @@ const ManageModels = () => {
 
   const handleAddModel = async () => {
     const token = localStorage.getItem("token");
+    if (!newModel.trim()) {
+      alert("Model name cannot be empty!");
+      return;
+    }
     try {
       await axios.post(
         "http://localhost:5237/models",
@@ -93,6 +98,18 @@ const ManageModels = () => {
         </Link>
       </div>
       <h2>Manage Models</h2>
+      <div style={{ marginBottom: "20px" }}>
+        <input
+          type="text"
+          value={newModel}
+          onChange={(e) => setNewModel(e.target.value)}
+          placeholder="Enter new model name"
+          style={{ padding: "5px", marginRight: "10px" }}
+        />
+        <button onClick={handleAddModel} style={{ padding: "5px 10px" }}>
+          Add Model
+        </button>
+      </div>
       <table>
         <thead>
           <tr>

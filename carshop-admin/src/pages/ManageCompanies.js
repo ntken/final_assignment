@@ -10,6 +10,7 @@ const ManageCompanies = () => {
   const [newCompanyName, setNewCompanyName] = useState("");
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [selectedCompanyId, setSelectedCompanyId] = useState(null);
+  const [newCompany, setNewCompany] = useState("");
 
   useEffect(() => {
     fetchCompanies();
@@ -29,6 +30,10 @@ const ManageCompanies = () => {
 
   const handleAddCompany = async () => {
     const token = localStorage.getItem("token");
+    if (!newCompany.trim()) {
+      alert("Company name cannot be empty!");
+      return;
+    }
     try {
       await axios.post(
         "http://localhost:5237/companies",
@@ -93,6 +98,18 @@ const ManageCompanies = () => {
         </Link>
       </div>
       <h2>Manage Companies</h2>
+      <div style={{ marginBottom: "20px" }}>
+        <input
+          type="text"
+          value={newCompany}
+          onChange={(e) => setNewCompany(e.target.value)}
+          placeholder="Enter new company name"
+          style={{ padding: "5px", marginRight: "10px" }}
+        />
+        <button onClick={handleAddCompany} style={{ padding: "5px 10px" }}>
+          Add Company
+        </button>
+      </div>
       <table>
         <thead>
           <tr>
