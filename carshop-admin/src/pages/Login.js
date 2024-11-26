@@ -1,54 +1,61 @@
-import { useContext, useState } from "react";
+import { jwtDecode } from "jwt-decode";
+import { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const { login } = useContext(AuthContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext); // Sử dụng AuthContext
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleLogin = async () => {
     try {
       const response = await axios.post("http://localhost:5237/users/login", {
         email,
         password,
       });
-      const token = response.data.token;
 
-      login(token); // Lưu token vào context
-      navigate("/dashboard"); // Chuyển hướng đến Dashboard
-    } catch (err) {
-      setError("Invalid email or password");
+      const token = response.data.token;
+      const decodedToken = jwtDecode(token);
+
+      console.log("Decoded Token:", decodedToken);
+      console.log("Role", decodedToken["Role"]);
+      if (decodedToken["Role"] !== "Admin") {
+        throw new Error("Access denied. Only Admin users can log in.");
+      }
+
+      login(token); // Cập nhật context
+      console.log("Navigating to Dashboard...");
+      navigate("/"); // Điều hướng về Dashboard
+    } catch (error) {
+      setErrorMessage(error.response?.data?.message || error.message || "Login failed");
     }
   };
 
   return (
     <div>
-      <h2>Admin Login</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Email:</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-        <div>
-          <label>Password:</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        <button type="submit">Login</button>
-      </form>
+      <h2>Login</h2>
+      <div>
+        <label>Email: </label>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+      </div>
+      <div>
+        <label>Password: </label>
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+      </div>
+      <button onClick={handleLogin}>Login</button>
+      {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
     </div>
   );
 };

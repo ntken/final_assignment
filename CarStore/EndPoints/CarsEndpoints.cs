@@ -3,6 +3,8 @@ using CarStore.Entities;
 using CarStore.Mapping;
 using CarShop.Shared.Models;
 using Microsoft.EntityFrameworkCore;
+using CarStore.Utils;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CarStore.EndPoints;
 
@@ -57,8 +59,12 @@ public static class CarsEndpoints
         .WithName(GetCarEndPointName);
 
         //POST /cars
-        group.MapPost("/", async (CreateCarDto newCar, CarStoreContext dbContext) =>
+        group.MapPost("/", [Authorize] async (HttpContext httpContext, CreateCarDto newCar, CarStoreContext dbContext) =>
         {
+            if (!AuthorizationUtils.IsAdmin(httpContext))
+            {
+                return Results.Forbid();
+            }
             Car car = newCar.ToEntity();
 
             dbContext.Cars.Add(car);
@@ -71,8 +77,12 @@ public static class CarsEndpoints
         });
 
         //PUT /cars
-        group.MapPut("/{id}", async (int id, UpdateCarDto updateCar, CarStoreContext dbContext) =>
+        group.MapPut("/{id}", [Authorize] async (HttpContext httpContext, int id, UpdateCarDto updateCar, CarStoreContext dbContext) =>
         {
+            if (!AuthorizationUtils.IsAdmin(httpContext))
+            {
+                return Results.Forbid();
+            }
             var existingCar = await dbContext.Cars.FindAsync(id);
 
             if (existingCar is null)
@@ -90,8 +100,12 @@ public static class CarsEndpoints
         });
 
         //DELETE /cars/1
-        group.MapDelete("/{id}", async (int id, CarStoreContext dbContext) =>
+        group.MapDelete("/{id}", [Authorize] async (HttpContext httpContext, int id, CarStoreContext dbContext) =>
         {
+            if (!AuthorizationUtils.IsAdmin(httpContext))
+            {
+                return Results.Forbid();
+            }
             await dbContext.Cars
             .Where(car => car.Id == id)
             .ExecuteDeleteAsync();

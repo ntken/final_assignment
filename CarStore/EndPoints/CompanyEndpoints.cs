@@ -4,6 +4,8 @@ using CarStore.Mapping;
 using CarStore.Entities;
 using CarShop.Shared.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+using CarStore.Utils;
 
 namespace CarStore.EndPoints;
 
@@ -46,8 +48,12 @@ public static class CompanyEndpoints
         });
 
         // PUT: Update an existing company
-        group.MapPut("/{id}", async (int id, UpdateItemDto updateCompanyDto, CarStoreContext dbContext) =>
+        group.MapPut("/{id}", [Authorize] async (HttpContext httpContext, int id, UpdateItemDto updateCompanyDto, CarStoreContext dbContext) =>
         {
+            if (!AuthorizationUtils.IsAdmin(httpContext))
+            {
+                return Results.Forbid();
+            }
             var existingCompany = await dbContext.Companies.FindAsync(id);
             if (existingCompany == null)
             {
@@ -61,8 +67,12 @@ public static class CompanyEndpoints
         });
 
         // DELETE: Delete a company
-        group.MapDelete("/{id}", async (int id, CarStoreContext dbContext) =>
+        group.MapDelete("/{id}", [Authorize] async (HttpContext httpContext, int id, CarStoreContext dbContext) =>
         {
+            if (!AuthorizationUtils.IsAdmin(httpContext))
+            {
+                return Results.Forbid();
+            }
             var existingCompany = await dbContext.Companies.FindAsync(id);
             if (existingCompany == null)
             {

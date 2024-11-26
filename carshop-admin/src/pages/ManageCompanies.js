@@ -92,61 +92,56 @@ const ManageCompanies = () => {
 
   return (
     <div>
-      <div>
-        <Link to="/" className="back-to-dashboard">
-          ← Back to Dashboard
-        </Link>
-      </div>
+      <Link to="/" className="back-to-dashboard">← Back to Dashboard</Link>
       <h2>Manage Companies</h2>
-      <div style={{ marginBottom: "20px" }}>
+      <div className="form-container">
         <input
           type="text"
           value={newCompany}
           onChange={(e) => setNewCompany(e.target.value)}
           placeholder="Enter new company name"
-          style={{ padding: "5px", marginRight: "10px" }}
         />
-        <button onClick={handleAddCompany} style={{ padding: "5px 10px" }}>
-          Add Company
-        </button>
+        <button onClick={handleAddCompany} className="add-btn">Add Company</button>
       </div>
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {companies.map((company) => (
-            <tr key={company.id}>
-              <td>{company.id}</td>
-              <td>
-                {editingId === company.id ? (
-                  <input
-                    type="text"
-                    value={newCompanyName}
-                    onChange={(e) => setNewCompanyName(e.target.value)}
-                  />
-                ) : (
-                  company.name
-                )}
-              </td>
-              <td>
-                {editingId === company.id ? (
-                  <button onClick={() => handleSaveClick(company.id)}>Save</button>
-                ) : (
-                  <button onClick={() => handleEditClick(company.id, company.name)}>
-                    Edit
-                  </button>
-                )}
-                <button onClick={() => handleDeleteClick(company.id)}>Delete</button>
-              </td>
+      <div className="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {companies.map((company) => (
+              <tr key={company.id}>
+                <td>{company.id}</td>
+                <td>
+                  {editingId === company.id ? (
+                    <input
+                      type="text"
+                      value={newCompanyName}
+                      onChange={(e) => setNewCompanyName(e.target.value)}
+                    />
+                  ) : (
+                    company.name
+                  )}
+                </td>
+                <td>
+                  {editingId === company.id ? (
+                    <button onClick={() => handleSaveClick(company.id)} className="edit-btn">Save</button>
+                  ) : (
+                    <button onClick={() => handleEditClick(company.id, company.name)} className="edit-btn">
+                      Edit
+                    </button>
+                  )}
+                  <button onClick={() => handleDeleteClick(company.id)} className="delete-btn">Delete</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       {isPopupOpen && (
         <ConfirmPopup
           message="Are you sure you want to delete this company?"
@@ -154,6 +149,7 @@ const ManageCompanies = () => {
           onCancel={handleCancelDelete}
         />
       )}
+
     </div>
   );
 };

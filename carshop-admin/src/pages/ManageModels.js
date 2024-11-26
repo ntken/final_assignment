@@ -81,8 +81,8 @@ const ManageModels = () => {
       await axios.put(
         `http://localhost:5237/models/${id}`,
         { name: newModelName },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+        { headers: { Authorization: `Bearer ${token}` }
+      });
       setEditingId(null);
       fetchModels();
     } catch (error) {
@@ -92,66 +92,61 @@ const ManageModels = () => {
 
   return (
     <div>
-      <div>
-        <Link to="/" className="back-to-dashboard">
-          ← Back to Dashboard
-        </Link>
-      </div>
+      <Link to="/" className="back-to-dashboard">← Back to Dashboard</Link>
       <h2>Manage Models</h2>
-      <div style={{ marginBottom: "20px" }}>
+      <div className="form-container">
         <input
           type="text"
           value={newModel}
           onChange={(e) => setNewModel(e.target.value)}
           placeholder="Enter new model name"
-          style={{ padding: "5px", marginRight: "10px" }}
         />
-        <button onClick={handleAddModel} style={{ padding: "5px 10px" }}>
-          Add Model
-        </button>
+        <button onClick={handleAddModel} className="add-btn">Add Model</button>
       </div>
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {models.map((model) => (
-            <tr key={model.id}>
-              <td>{model.id}</td>
-              <td>
-                {editingId === model.id ? (
-                  <input
-                    type="text"
-                    value={newModelName}
-                    onChange={(e) => setNewModelName(e.target.value)}
-                  />
-                ) : (
-                  model.name
-                )}
-              </td>
-              <td>
-                {editingId === model.id ? (
-                  <button onClick={() => handleSaveClick(model.id)}>Save</button>
-                ) : (
-                  <button onClick={() => handleEditClick(model.id, model.name)}>
-                    Edit
-                  </button>
-                )}
-                <button onClick={() => handleDeleteClick(model.id)}>Delete</button>
-              </td>
+      <div className="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {models.map((model) => (
+              <tr key={model.id}>
+                <td>{model.id}</td>
+                <td>
+                  {editingId === model.id ? (
+                    <input
+                      type="text"
+                      value={newModelName}
+                      onChange={(e) => setNewModelName(e.target.value)}
+                    />
+                  ) : (
+                    model.name
+                  )}
+                </td>
+                <td>
+                  {editingId === model.id ? (
+                    <button onClick={() => handleSaveClick(model.id)} className="edit-btn">Save</button>
+                  ) : (
+                    <button onClick={() => handleEditClick(model.id, model.name)} className="edit-btn">
+                      Edit
+                    </button>
+                  )}
+                  <button onClick={() => handleDeleteClick(model.id)} className="delete-btn">Delete</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       {isPopupOpen && (
         <ConfirmPopup
           message="Are you sure you want to delete this model?"
-          onConfirm={handleConfirmDelete}
           onCancel={handleCancelDelete}
+          onConfirm={handleConfirmDelete}
         />
       )}
     </div>

@@ -141,11 +141,11 @@ const ManageCars = () => {
         <div className="edit-form">
           <h3>Edit Car</h3>
           <div>
-            <label>Car Name:</label>
+            <label>Car Name: </label>
             <input type="text" value={`${editingCar.company} ${editingCar.model}`} readOnly />
           </div>
           <div>
-            <label>Company:</label>
+            <label>Company: </label>
             <select
               value={editingCar.companyId}
               onChange={(e) => handleInputChange("companyId", parseInt(e.target.value))}
@@ -158,7 +158,7 @@ const ManageCars = () => {
             </select>
           </div>
           <div>
-            <label>Model:</label>
+            <label>Model: </label>
             <select
               value={editingCar.modelId}
               onChange={(e) => handleInputChange("modelId", parseInt(e.target.value))}
@@ -171,7 +171,7 @@ const ManageCars = () => {
             </select>
           </div>
           <div>
-            <label>Color:</label>
+            <label>Color: </label>
             <select
               value={editingCar.colorId}
               onChange={(e) => handleInputChange("colorId", parseInt(e.target.value))}
@@ -184,7 +184,7 @@ const ManageCars = () => {
             </select>
           </div>
           <div>
-            <label>Image URL:</label>
+            <label>Image URL: </label>
             <input
               type="text"
               value={editingCar.image}
@@ -192,7 +192,7 @@ const ManageCars = () => {
             />
           </div>
           <div>
-            <label>Price:</label>
+            <label>Price: </label>
             <input
               type="number"
               value={editingCar.price}
@@ -200,7 +200,7 @@ const ManageCars = () => {
             />
           </div>
           <div>
-            <label>Released Date:</label>
+            <label>Released Date: </label>
             <input
               type="date"
               value={editingCar.releasedDate.split("T")[0]}
@@ -208,14 +208,17 @@ const ManageCars = () => {
             />
           </div>
           <div>
-            <label>Description:</label>
+            <label>Description: </label>
             <textarea
+              rows="4"
               value={editingCar.description}
               onChange={(e) => handleInputChange("description", e.target.value)}
             ></textarea>
           </div>
-          <button onClick={handleSaveClick}>Save</button>
-          <button onClick={handleCancelEdit}>Cancel</button>
+          <div style={{ textAlign: "center" }}>
+            <button onClick={handleSaveClick}>Save</button>
+            <button onClick={handleCancelEdit}>Cancel</button>
+          </div>
         </div>
       ) : (
         <table>

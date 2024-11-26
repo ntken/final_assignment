@@ -1,28 +1,31 @@
 import { createContext, useState } from "react";
+import { jwtDecode } from "jwt-decode";
 
 export const AuthContext = createContext();
 
-const AuthProvider = ({ children }) => {
-  const [auth, setAuth] = useState(() => {
-    const token = localStorage.getItem("token");
-    return token ? { isAuthenticated: true, token } : { isAuthenticated: false };
-  });
+export const AuthProvider = ({ children }) => {
+  const token = localStorage.getItem("token");
+  const [isLoggedIn, setIsLoggedIn] = useState(!!token && jwtDecode(token)["Role"] === "Admin");
 
   const login = (token) => {
+    const decodedToken = jwtDecode(token);
+    console.log("Decoded Token Auth:", decodedToken);
+    console.log("Role Auth", decodedToken["Role"]);
+    if (decodedToken["Role"] !== "Admin") {
+      throw new Error("Access denied. Only Admin users can log in.");
+    }
     localStorage.setItem("token", token);
-    setAuth({ isAuthenticated: true, token });
+    setIsLoggedIn(true);
   };
 
   const logout = () => {
     localStorage.removeItem("token");
-    setAuth({ isAuthenticated: false, token: null });
+    setIsLoggedIn(false);
   };
 
   return (
-    <AuthContext.Provider value={{ auth, login, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
 };
-
-export default AuthProvider;

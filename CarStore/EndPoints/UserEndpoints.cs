@@ -38,6 +38,7 @@ public static class UserEndpoints
             signingCredentials: new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256)
         );
         Console.WriteLine($"GenerateJwtToken: Issuer = {issuer}");
+        Console.WriteLine($"Token for user {user.Email} with role {user.Role}");
 
         return new JwtSecurityTokenHandler().WriteToken(jwt);
     }
@@ -121,12 +122,12 @@ public static class UserEndpoints
         });
 
         // GET /users
-        group.MapGet("/", async (HttpContext httpContext, CarStoreContext dbContext) =>
+        group.MapGet("/", [Authorize] async (HttpContext httpContext, CarStoreContext dbContext) =>
         {
-            // if (!AuthorizationUtils.IsAdmin(httpContext))
-            // {
-            //     return Results.Forbid();
-            // }
+            if (!AuthorizationUtils.IsAdmin(httpContext))
+            {
+                return Results.Forbid();
+            }
             var users = await dbContext.Users
                 .Select(u => new { u.Id, u.Email, u.FullName, u.Role })
                 .ToListAsync();
@@ -134,12 +135,12 @@ public static class UserEndpoints
         });
 
         // DELETE /users/{id}
-        group.MapDelete("/{id}", async (HttpContext httpContext, int id, CarStoreContext dbContext) =>
+        group.MapDelete("/{id}", [Authorize] async (HttpContext httpContext, int id, CarStoreContext dbContext) =>
         {
-            // if (!AuthorizationUtils.IsAdmin(httpContext))
-            // {
-            //     return Results.Forbid();
-            // }
+            if (!AuthorizationUtils.IsAdmin(httpContext))
+            {
+                return Results.Forbid();
+            }
             var user = await dbContext.Users.FindAsync(id);
             if (user == null)
             {

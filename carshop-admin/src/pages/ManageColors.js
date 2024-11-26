@@ -92,61 +92,56 @@ const ManageColors = () => {
 
   return (
     <div>
-      <div>
-        <Link to="/" className="back-to-dashboard">
-          ← Back to Dashboard
-        </Link>
-      </div>
+      <Link to="/" className="back-to-dashboard">← Back to Dashboard</Link>
       <h2>Manage Colors</h2>
-      <div style={{ marginBottom: "20px" }}>
+      <div className="form-container">
         <input
           type="text"
           value={newColor}
           onChange={(e) => setNewColor(e.target.value)}
           placeholder="Enter new color name"
-          style={{ padding: "5px", marginRight: "10px" }}
         />
-        <button onClick={handleAddColor} style={{ padding: "5px 10px" }}>
-          Add Color
-        </button>
+        <button onClick={handleAddColor} className="add-btn">Add Color</button>
       </div>
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {colors.map((color) => (
-            <tr key={color.id}>
-              <td>{color.id}</td>
-              <td>
-                {editingId === color.id ? (
-                  <input
-                    type="text"
-                    value={newColorName}
-                    onChange={(e) => setNewColorName(e.target.value)}
-                  />
-                ) : (
-                  color.name
-                )}
-              </td>
-              <td>
-                {editingId === color.id ? (
-                  <button onClick={() => handleSaveClick(color.id)}>Save</button>
-                ) : (
-                  <button onClick={() => handleEditClick(color.id, color.name)}>
-                    Edit
-                  </button>
-                )}
-                <button onClick={() => handleDeleteClick(color.id)}>Delete</button>
-              </td>
+      <div className="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {colors.map((color) => (
+              <tr key={color.id}>
+                <td>{color.id}</td>
+                <td>
+                  {editingId === color.id ? (
+                    <input
+                      type="text"
+                      value={newColorName}
+                      onChange={(e) => setNewColorName(e.target.value)}
+                    />
+                  ) : (
+                    color.name
+                  )}
+                </td>
+                <td>
+                  {editingId === color.id ? (
+                    <button onClick={() => handleSaveClick(color.id)} className="edit-btn">Save</button>
+                  ) : (
+                    <button onClick={() => handleEditClick(color.id, color.name)} className="edit-btn">
+                      Edit
+                    </button>
+                  )}
+                  <button onClick={() => handleDeleteClick(color.id)} className="delete-btn">Delete</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       {isPopupOpen && (
         <ConfirmPopup
           message="Are you sure you want to delete this color?"

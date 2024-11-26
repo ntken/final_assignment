@@ -4,6 +4,8 @@ using CarStore.Mapping;
 using CarStore.Entities;
 using CarShop.Shared.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+using CarStore.Utils;
 
 namespace CarStore.EndPoints;
 
@@ -27,34 +29,44 @@ public static class ColorEndpoints
         });
 
         // POST /colors: Thêm mới một màu
-        group.MapPost("/", async (CreateItemDto newColorDto, CarStoreContext dbContext) =>
-{
-    var newColor = new Color { Name = newColorDto.Name };
-    dbContext.Colors.Add(newColor);
-    await dbContext.SaveChangesAsync();
-    return Results.Created($"/colors/{newColor.Id}", newColor.ToDto());
-});
+        group.MapPost("/", [Authorize] async (HttpContext httpContext, CreateItemDto newColorDto, CarStoreContext dbContext) =>
+        {
+            if (!AuthorizationUtils.IsAdmin(httpContext))
+            {
+                return Results.Forbid();
+            }
+            var newColor = new Color { Name = newColorDto.Name };
+            dbContext.Colors.Add(newColor);
+            await dbContext.SaveChangesAsync();
+            return Results.Created($"/colors/{newColor.Id}", newColor.ToDto());
+        });
 
         // PUT /colors/{id}: Cập nhật một màu
-        group.MapPut("/{id}", async (int id, UpdateItemDto updateColorDto, CarStoreContext dbContext) =>
-{
-    // Tìm màu sắc có ID được cung cấp
-    var existingColor = await dbContext.Colors.FindAsync(id);
-    if (existingColor is null)
-    {
-        return Results.NotFound($"Color with ID {id} not found.");
-    }
-
-    // Cập nhật thông tin màu sắc
-    existingColor.Name = updateColorDto.Name;
-    await dbContext.SaveChangesAsync();
-
-    return Results.NoContent();
-});
+        group.MapPut("/{id}", [Authorize] async (HttpContext httpContext, int id, UpdateItemDto updateColorDto, CarStoreContext dbContext) =>
+        {
+            if (!AuthorizationUtils.IsAdmin(httpContext))
+            {
+                return Results.Forbid();
+            }
+            // Tìm màu sắc có ID được cung cấp
+            var existingColor = await dbContext.Colors.FindAsync(id);
+            if (existingColor is null)
+            {
+                return Results.NotFound($"Color with ID {id} not found.");
+            }
+            // Cập nhật thông tin màu sắc
+            existingColor.Name = updateColorDto.Name;
+            await dbContext.SaveChangesAsync();
+            return Results.NoContent();
+        });
 
         // DELETE /colors/{id}: Xóa một màu
-        group.MapDelete("/{id}", async (int id, CarStoreContext dbContext) =>
+        group.MapDelete("/{id}", [Authorize] async (HttpContext httpContext, int id, CarStoreContext dbContext) =>
         {
+            if (!AuthorizationUtils.IsAdmin(httpContext))
+            {
+                return Results.Forbid();
+            }
             var color = await dbContext.Colors.FindAsync(id);
             if (color is null)
             {
