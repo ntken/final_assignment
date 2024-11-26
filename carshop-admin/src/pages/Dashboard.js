@@ -1,21 +1,27 @@
-import { useContext } from "react";
-import { AuthContext } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import "../styles.css";
 
 const Dashboard = () => {
   return (
-    <div>
+    <div className="dashboard-container">
       <h1>Admin Dashboard</h1>
-      <nav>
-        <ul>
-          <li><Link to="/manage-cars">Manage Cars</Link></li>
-          <li><Link to="/manage-companies">Manage Companies</Link></li>
-          <li><Link to="/manage-models">Manage Models</Link></li>
-          <li><Link to="/manage-colors">Manage Colors</Link></li>
-          <li><Link to="/manage-users">Manage Users</Link></li>
-        </ul>
-      </nav>
+      <div className="dashboard-links">
+        <Link to="/manage-cars" className="dashboard-link">
+          Manage Cars
+        </Link>
+        <Link to="/manage-companies" className="dashboard-link">
+          Manage Companies
+        </Link>
+        <Link to="/manage-models" className="dashboard-link">
+          Manage Models
+        </Link>
+        <Link to="/manage-colors" className="dashboard-link">
+          Manage Colors
+        </Link>
+        <Link to="/manage-users" className="dashboard-link">
+          Manage Users
+        </Link>
+      </div>
     </div>
   );
 };
