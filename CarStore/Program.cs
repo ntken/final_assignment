@@ -44,16 +44,16 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.UseSecurityTokenValidators = true;
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateLifetime = false,
+            ValidateLifetime = true,
             ClockSkew = TimeSpan.Zero,
-            RequireExpirationTime = false,
+            RequireExpirationTime = true,
             ValidateIssuer = false,
             ValidIssuer = jwtIssuer, // "localhost"
-            ValidateAudience = false,
+            ValidateAudience = true,
             ValidAudience = jwtIssuer, // "localhost"
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtKey)), // Secret key
-            ValidAudiences = new List<string>() { jwtIssuer },
+            // ValidAudiences = new List<string>() { jwtIssuer },
             ValidateTokenReplay = true, // Kích hoạt kiểm tra token bị thu hồi
             TokenReplayValidator = (expirationTime, securityToken, validationParameters) =>
             {

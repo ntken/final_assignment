@@ -34,13 +34,13 @@ public static class UserEndpoints
             audience: issuer,
             claims: claims,
             notBefore: now,
-            expires: now.Add(TimeSpan.FromMinutes(60)),
+            expires: now.AddMinutes(60),
             signingCredentials: new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256)
         );
         //Console.WriteLine($"GenerateJwtToken: Issuer = {issuer}");
         //Console.WriteLine($"Token for user {user.Email} with role {user.Role}");
 
-        return new JwtSecurityTokenHandler().WriteToken(jwt);
+        return tokenHandler.WriteToken(jwt);
     }
     public static RouteGroupBuilder MapUserEndpoints(this WebApplication app)
     {
