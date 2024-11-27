@@ -8,6 +8,8 @@ CarStore.zip
 
 # Ignore database
 CarStore/CarStore.db
+CarStore\CarStore.db-wal
+CarStore\CarStore.db-shm
 
 # Ignore generated files and configuration
 CarStore/bin/
@@ -20,5 +22,3 @@ CarShop.Shared/obj
 # Ignore temporary files
 *.tmp
 *.log
-CarStore\CarStore.db-wal
-CarStore\CarStore.db-shm

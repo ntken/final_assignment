@@ -21,14 +21,14 @@ const Login = () => {
       const token = response.data.token;
       const decodedToken = jwtDecode(token);
 
-      console.log("Decoded Token:", decodedToken);
-      console.log("Role", decodedToken["Role"]);
+      //console.log("Decoded Token:", decodedToken);
+      //console.log("Role", decodedToken["Role"]);
       if (decodedToken["Role"] !== "Admin") {
         throw new Error("Access denied. Only Admin users can log in.");
       }
 
       login(token); // Cập nhật context
-      console.log("Navigating to Dashboard...");
+      //console.log("Navigating to Dashboard...");
       navigate("/"); // Điều hướng về Dashboard
     } catch (error) {
       setErrorMessage(error.response?.data?.message || error.message || "Login failed");

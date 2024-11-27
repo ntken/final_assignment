@@ -9,8 +9,8 @@ export const AuthProvider = ({ children }) => {
 
   const login = (token) => {
     const decodedToken = jwtDecode(token);
-    console.log("Decoded Token Auth:", decodedToken);
-    console.log("Role Auth", decodedToken["Role"]);
+    //console.log("Decoded Token Auth:", decodedToken);
+    //console.log("Role Auth", decodedToken["Role"]);
     if (decodedToken["Role"] !== "Admin") {
       throw new Error("Access denied. Only Admin users can log in.");
     }

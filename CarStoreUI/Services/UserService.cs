@@ -50,7 +50,7 @@ namespace CarStoreUI.Services
                 {
                     // Đọc nội dung JSON từ phản hồi
                     var responseContent = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine($"Response Content: {responseContent}");
+                    //Console.WriteLine($"Response Content: {responseContent}");
 
                     try
                     {
@@ -59,7 +59,7 @@ namespace CarStoreUI.Services
                         if (jsonDocument.RootElement.TryGetProperty("token", out var tokenElement))
                         {
                             string? token = tokenElement.GetString();
-                            Console.WriteLine($"Token received: {token}");
+                            //Console.WriteLine($"Token received: {token}");
 
                             if (!string.IsNullOrEmpty(token))
                             {

@@ -37,8 +37,8 @@ public static class UserEndpoints
             expires: now.Add(TimeSpan.FromMinutes(60)),
             signingCredentials: new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256)
         );
-        Console.WriteLine($"GenerateJwtToken: Issuer = {issuer}");
-        Console.WriteLine($"Token for user {user.Email} with role {user.Role}");
+        //Console.WriteLine($"GenerateJwtToken: Issuer = {issuer}");
+        //Console.WriteLine($"Token for user {user.Email} with role {user.Role}");
 
         return new JwtSecurityTokenHandler().WriteToken(jwt);
     }

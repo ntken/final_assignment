@@ -14,7 +14,7 @@ public class CarService
         var token = _httpContextAccessor.HttpContext?.Session.GetString("JwtToken");
         if (!string.IsNullOrEmpty(token))
         {
-            Console.WriteLine($"Using token: {token}");
+            //Console.WriteLine($"Using token: {token}");
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         }
     }

@@ -27,8 +27,8 @@ builder.Services.AddCors(options =>
 var jwtKey = builder.Configuration["Jwt:Key"];
 var jwtIssuer = builder.Configuration["Jwt:Issuer"];
 var TokenBlacklist = new ConcurrentBag<string>();
-Console.WriteLine($"JWT Issuer: {builder.Configuration["Jwt:Issuer"]}");
-Console.WriteLine($"JWT Key: {builder.Configuration["Jwt:Key"]}");
+//Console.WriteLine($"JWT Issuer: {builder.Configuration["Jwt:Issuer"]}");
+//Console.WriteLine($"JWT Key: {builder.Configuration["Jwt:Key"]}");
 
 if (string.IsNullOrEmpty(jwtKey) || string.IsNullOrEmpty(jwtIssuer))
 {
@@ -61,7 +61,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 var token = securityToken as string;
                 if (token != null && TokenBlacklist.Contains(token))
                 {
-                    Console.WriteLine($"Token is revoked: {token}");
+                    //Console.WriteLine($"Token is revoked: {token}");
                     return false;
                 }
                 return true;
@@ -79,14 +79,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             OnTokenValidated = context =>
             {
                 var identityName = context.Principal?.Identity?.Name;
-                if (!string.IsNullOrEmpty(identityName))
-                {
-                    Console.WriteLine($"Token validated for {identityName}");
-                }
-                else
-                {
-                    Console.WriteLine("Token validated, but no identity name found.");
-                }
+                // if (!string.IsNullOrEmpty(identityName))
+                // {
+                //     Console.WriteLine($"Token validated for {identityName}");
+                // }
+                // else
+                // {
+                //     Console.WriteLine("Token validated, but no identity name found.");
+                // }
                 return Task.CompletedTask;
             }
         };
@@ -100,15 +100,15 @@ var app = builder.Build();
 app.UseCors("AllowAllOrigins");
 app.Use(async (context, next) =>
 {
-    Console.WriteLine($"Request: {context.Request.Method} {context.Request.Path}");
-    if (context.Request.Headers.TryGetValue("Authorization", out var authHeader))
-    {
-        Console.WriteLine($"Authorization: {authHeader}");
-    }
-    else
-    {
-        Console.WriteLine("Authorization header not found.");
-    }
+    //Console.WriteLine($"Request: {context.Request.Method} {context.Request.Path}");
+    // if (context.Request.Headers.TryGetValue("Authorization", out var authHeader))
+    // {
+    //     Console.WriteLine($"Authorization: {authHeader}");
+    // }
+    // else
+    // {
+    //     Console.WriteLine("Authorization header not found.");
+    // }
     await next();
 });
 
