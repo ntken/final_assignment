@@ -7,9 +7,8 @@ CarStore.zip
 .vscode/
 
 # Ignore database
-CarStore/CarStore.db
-CarStore\CarStore.db-wal
-CarStore\CarStore.db-shm
+CarStore/CarStore.db-wal
+CarStore/CarStore.db-shm
 
 # Ignore generated files and configuration
 CarStore/bin/
